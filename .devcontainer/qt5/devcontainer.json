@@ -1,0 +1,47 @@
+// For format details, see https://aka.ms/devcontainer.json
+{
+	"name": "Qt 5",
+	"build": {
+		"dockerfile": "Dockerfile",
+		"args": { "VARIANT": "ubuntu-22.04" }
+	},
+
+	// required to allow debugging
+	"capAdd": ["SYS_PTRACE"],
+	//"securityOpt": ["seccomp=undefined"],
+
+	"features": {
+		"ghcr.io/devcontainers/features/desktop-lite:1": {
+			"password": "qgis",
+			"webPort": "6080",
+			"vncPort": "5901"
+		}
+	},
+	"forwardPorts": [5900, 5901, 6080],
+	"portsAttributes": {
+		"6080": {
+			"label": "Web VNC viewer"
+		}
+	},
+
+	"customizations": {
+		"vscode": {
+			"extensions": [
+				"ms-vscode.cpptools-extension-pack",
+				"dvratil.vscode-qtdoc",
+				"ms-vscode.cmake-tools",
+				"twxs.cmake",
+				"ms-python.python",
+				"GitHub.vscode-pull-request-github"
+			],
+			"settings": {
+				"cmake.generator": "Ninja",
+				"cmake.preferredGenerators": ["Ninja"],
+				"files.eol": "\n"
+			}
+		},
+		"codespaces": {
+			"openFiles": ["README.md"]
+		}
+	}
+}
