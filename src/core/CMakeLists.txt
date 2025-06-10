@@ -269,6 +269,7 @@ set(QGIS_CORE_SRCS
   network/qgsnewsfeedparser.cpp
   network/qgshttpheaders.cpp
   network/qgsrangerequestcache.cpp
+  network/qgsvsinetworkfilehandler.cpp
 
   painting/qgsgeometrypaintdevice.cpp
   painting/qgsmaskpaintdevice.cpp
@@ -1819,6 +1820,7 @@ set(QGIS_CORE_HDRS
   network/qgsnewsfeedparser.h
   network/qgshttpheaders.h
   network/qgsrangerequestcache.h
+  network/qgsvsinetworkfilehandler.h
 
   numericformats/qgsbasicnumericformat.h
   numericformats/qgsbearingnumericformat.h

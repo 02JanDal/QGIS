@@ -393,7 +393,7 @@ QList<QgsMapLayer *> QgsAppLayerHandling::addOgrVectorLayers( const QStringList 
     }
 
     QgsDebugMsgLevel( "completeBaseName: " + baseName, 2 );
-    const bool isVsiCurl { uri.startsWith( QLatin1String( "/vsicurl" ), Qt::CaseInsensitive ) };
+    const bool isVsiCurl { uri.startsWith( QLatin1String( "/vsicurl" ), Qt::CaseInsensitive ) || uri.startsWith( QLatin1String( "/vsiqgis" ), Qt::CaseInsensitive ) };
     const auto scheme { QUrl( uri ).scheme() };
     const bool isRemoteUrl { scheme.startsWith( QLatin1String( "http" ) ) || scheme == QLatin1String( "ftp" ) };
 
@@ -1127,7 +1127,7 @@ QList<QgsMapLayer *> QgsAppLayerHandling::addGdalRasterLayers( const QStringList
         continue;
     }
 
-    const bool isVsiCurl { uri.startsWith( QLatin1String( "/vsicurl" ), Qt::CaseInsensitive ) };
+    const bool isVsiCurl { uri.startsWith( QLatin1String( "/vsicurl" ), Qt::CaseInsensitive ) || uri.startsWith( QLatin1String( "/vsiqgis" ), Qt::CaseInsensitive ) };
     const bool isRemoteUrl { uri.startsWith( QLatin1String( "http" ) ) || uri == QLatin1String( "ftp" ) };
 
     std::unique_ptr<QgsTemporaryCursorOverride> cursorOverride;

@@ -101,6 +101,7 @@
 #include "layout/qgspagesizeregistry.h"
 #include "qgsrecentstylehandler.h"
 #include "qgsdatetimefieldformatter.h"
+#include "qgsvsinetworkfilehandler.h"
 
 #include <QDir>
 #include <QFile>
@@ -125,6 +126,7 @@
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
 #include <QImageReader>
 #endif
+#include <cpl_vsi_virtual.h>
 
 const QgsSettingsEntryString *QgsApplication::settingsLocaleUserLocale = new QgsSettingsEntryString( QStringLiteral( "userLocale" ), QgsSettingsTree::sTreeLocale, QString() );
 
@@ -497,6 +499,14 @@ void QgsApplication::init( QString profileFolder )
   QgsStyle *defaultStyle = QgsStyle::defaultStyle( false );
   if ( !members()->mStyleModel )
     members()->mStyleModel = std::make_unique<QgsStyleModel>( defaultStyle );
+
+  static std::once_flag sVSIHandlerRegistered;
+  std::call_once( sVSIHandlerRegistered, [] {
+    VSIFileManager::InstallHandler("/vsiqgis/", new QgsVSINetworkFileHandler());
+    VSIFileManager::InstallHandler("/vsiqgis?", new QgsVSINetworkFileHandler());
+    VSIFileManager::InstallHandler("/vsiqgis_streaming/", new QgsVSINetworkFileHandler());
+    VSIFileManager::InstallHandler("/vsiqgis_streaming?", new QgsVSINetworkFileHandler());
+  } );
 
   ABISYM( mInitialized ) = true;
 }

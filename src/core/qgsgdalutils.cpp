@@ -924,6 +924,8 @@ QList<QgsGdalUtils::VsiNetworkFileSystemDetails> QgsGdalUtils::vsiNetworkFileSys
 
         if ( details.identifier == QLatin1String( "vsicurl" ) )
           details.name = QObject::tr( "HTTP/HTTPS/FTP" );
+        else if ( details.identifier == QLatin1String( "vsiqgis" ) )
+          details.name = QObject::tr( "HTTP/HTTPS/FTP (via QGIS)" );
         else if ( details.identifier == QLatin1String( "vsis3" ) )
           details.name = QObject::tr( "AWS S3" );
         else if ( details.identifier == QLatin1String( "vsigs" ) )
@@ -1010,7 +1012,8 @@ Qgis::VsiHandlerType QgsGdalUtils::vsiHandlerType( const QString &prefix )
     return Qgis::VsiHandlerType::Archive;
 
   else if ( vsiPrefix == QLatin1String( "vsicurl" ) ||
-            vsiPrefix == QLatin1String( "vsicurl_streaming" ) )
+            vsiPrefix == QLatin1String( "vsicurl_streaming" ) ||
+            vsiPrefix == QLatin1String( "vsiqgis" ) )
     return Qgis::VsiHandlerType::Network;
 
   else if ( vsiPrefix == QLatin1String( "vsis3" ) ||
