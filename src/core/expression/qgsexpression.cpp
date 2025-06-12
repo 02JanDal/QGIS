@@ -16,6 +16,7 @@
 #include "qgsexpression.h"
 #include "qgsexpressionfunction.h"
 #include "qgsexpressionnodeimpl.h"
+#include "qgsfeatureasset.h"
 #include "qgsfeaturerequest.h"
 #include "qgslogger.h"
 #include "qgsexpressioncontext.h"
@@ -1091,6 +1092,10 @@ QString QgsExpression::formatPreviewString( const QVariant &value, const bool ht
   else if ( value.userType() == qMetaTypeId< QgsGradientColorRamp>() )
   {
     return startToken + tr( "gradient ramp" ) + endToken;
+  }
+  else if ( value.userType() == qMetaTypeId<QgsFeatureAsset>() )
+  {
+    return startToken + tr( "asset" ) + endToken;
   }
   else if ( value.userType() == QMetaType::Type::QDate )
   {

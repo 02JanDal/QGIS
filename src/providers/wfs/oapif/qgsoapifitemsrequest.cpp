@@ -21,13 +21,16 @@ using namespace nlohmann;
 #include "moc_qgsoapifitemsrequest.cpp"
 #include "qgsoapifutils.h"
 #include "qgsproviderregistry.h"
+#include "qgsstacasset.h"
 
 #include "cpl_vsi.h"
 
 #include <QTextCodec>
+#include <qgsjsonutils.h>
+#include <qgsstacparser.h>
 
-QgsOapifItemsRequest::QgsOapifItemsRequest( const QgsDataSourceUri &baseUri, const QString &url )
-  : QgsBaseNetworkRequest( QgsAuthorizationSettings( baseUri.username(), baseUri.password(), QgsHttpHeaders(), baseUri.authConfigId() ), tr( "OAPIF" ) ), mUrl( url )
+QgsOapifItemsRequest::QgsOapifItemsRequest(const QgsDataSourceUri &baseUri, const QString &url , const bool readStacAssets)
+  : QgsBaseNetworkRequest( QgsAuthorizationSettings( baseUri.username(), baseUri.password(), QgsHttpHeaders(), baseUri.authConfigId() ), tr( "OAPIF" ) ), mUrl( url ), mReadStacAssets( readStacAssets )
 {
   // Using Qt::DirectConnection since the download might be running on a different thread.
   // In this case, the request was sent from the main thread and is executed with the main
@@ -194,6 +197,25 @@ void QgsOapifItemsRequest::processReply()
             {
               mFoundIdInProperties = true;
             }
+          }
+          if ( mReadStacAssets && jFeature.is_object() && jFeature.contains( "assets" ) )
+          {
+            QgsStacParser parser;
+            parser.setBaseUrl( mUrl );
+            const QMap<QString, QgsStacAsset> assets = parser.parseAssets( jFeature["assets"] );
+            QMap<QString, QVariant> variantAssets;
+            for ( auto it = assets.cbegin(); it != assets.cend(); ++it )
+            {
+              variantAssets.insert( it.key(), QVariant::fromValue( QgsFeatureAsset( it.value() ) ) );
+            }
+
+            QgsField fields( QStringLiteral( "assets" ), QMetaType::Type::QVariantMap, QStringLiteral( "assets" ), 0, 0, QString(), static_cast<QMetaType::Type>( qMetaTypeId<QgsFeatureAsset>() ) );
+            mFields.append( fields );
+            mFeatures[i].first.setFields( mFields, false );
+
+            QgsAttributes attributes = mFeatures[i].first.attributes();
+            attributes << variantAssets;
+            mFeatures[i].first.setAttributes( attributes );
           }
         }
       }

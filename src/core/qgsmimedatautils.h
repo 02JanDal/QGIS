@@ -179,6 +179,8 @@ class CORE_EXPORT QgsMimeDataUtils
 
     static UriList decodeUriList( const QMimeData *data );
 
+    static QString uriListMimeType();
+
     /**
      * Returns encoded URI list from a list of layer tree nodes.
      */

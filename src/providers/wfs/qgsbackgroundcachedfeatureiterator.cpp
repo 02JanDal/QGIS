@@ -18,6 +18,7 @@
 #include "qgsbackgroundcachedshareddata.h"
 
 #include "qgsapplication.h"
+#include "qgsfeatureasset.h"
 #include "qgsfeedback.h"
 #include "qgslogger.h"
 #include "qgsmessagelog.h"
@@ -920,12 +921,25 @@ void QgsBackgroundCachedFeatureIterator::copyFeature( const QgsFeature &srcFeatu
     {
       const QVariant &v = srcFeature.attributes().value( idx );
       const QMetaType::Type fieldType = fields.at( i ).type();
+      const QMetaType::Type fieldSubType = fields.at( i ).subType();
       if ( QgsVariantUtils::isNull( v ) )
         dstFeature.setAttribute( i, QgsVariantUtils::createNullVariant( fieldType ) );
       else if ( QgsWFSUtils::isCompatibleType( static_cast<QMetaType::Type>( v.userType() ), fieldType ) )
         dstFeature.setAttribute( i, v );
       else if ( fieldType == QMetaType::Type::QDateTime && !QgsVariantUtils::isNull( v ) )
         dstFeature.setAttribute( i, QDateTime::fromMSecsSinceEpoch( v.toLongLong() ) );
+      else if ( fieldType == QMetaType::Type::QVariantMap && fieldSubType == qMetaTypeId<QgsFeatureAsset>() )
+      {
+        const QJsonObject obj = QJsonDocument::fromJson( v.toString().toUtf8() ).object();
+        QVariantMap map;
+        for ( auto it = obj.constBegin(); it != obj.constEnd(); ++it )
+        {
+          QgsFeatureAsset asset;
+          asset.fromJson( it.value().toObject() );
+          map.insert( it.key(), QVariant::fromValue( asset ) );
+        }
+        dstFeature.setAttribute( i, map );
+      }
       else if ( fieldType == QMetaType::Type::QVariantMap && !QgsVariantUtils::isNull( v ) )
         dstFeature.setAttribute( i, QJsonDocument::fromJson( v.toString().toUtf8() ).toVariant() );
       else

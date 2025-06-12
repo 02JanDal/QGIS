@@ -522,7 +522,7 @@ void QgsStacSourceSelect::showItemsContextMenu( QPoint point )
       if ( asset.isCloudOptimized() )
       {
         QAction *loadAssetAction = new QAction( asset.title(), assetsMenu );
-        connect( loadAssetAction, &QAction::triggered, this, [this, uri = asset.uri()] {
+        connect( loadAssetAction, &QAction::triggered, this, [this, uri = asset.uri( mStac->authCfg() )] {
           QgsTemporaryCursorOverride cursorOverride( Qt::WaitCursor );
           loadUri( uri );
         } );

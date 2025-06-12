@@ -100,6 +100,8 @@ class CORE_EXPORT QgsStacParser
     QgsStacParser( const QgsStacParser &rh ) SIP_FORCE;
 #endif
 
+    friend class QgsOapifItemsRequest;
+
     std::unique_ptr< QgsStacItem > parseItem( const nlohmann::json &data );
     std::unique_ptr< QgsStacCatalog > parseCatalog( const nlohmann::json &data );
     std::unique_ptr< QgsStacCollection > parseCollection( const nlohmann::json &data );

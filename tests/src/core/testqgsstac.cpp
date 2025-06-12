@@ -188,7 +188,7 @@ void TestQgsStac::testParseLocalItem()
   QCOMPARE( links.at( 3 ).href(), QStringLiteral( "http://remotedata.io/catalog/20201211_223832_CS2/index.html" ) );
 
   QCOMPARE( item->assets().size(), 6 );
-  QgsStacAsset asset = item->assets().value( QStringLiteral( "analytic" ), QgsStacAsset( {}, {}, {}, {}, {} ) );
+  QgsStacAsset asset = item->assets().value( QStringLiteral( "analytic" ), QgsStacAsset( {}, {}, {}, {}, {}, {} ) );
   QCOMPARE( asset.href(), basePath + QStringLiteral( "20201211_223832_CS2_analytic.tif" ) );
   QVERIFY( asset.isCloudOptimized() );
   QCOMPARE( asset.formatName(), QStringLiteral( "COG" ) );
@@ -198,7 +198,7 @@ void TestQgsStac::testParseLocalItem()
   QCOMPARE( uri.name, QStringLiteral( "4-Band Analytic" ) );
   QCOMPARE( uri.layerType, QStringLiteral( "raster" ) );
 
-  asset = item->assets().value( QStringLiteral( "thumbnail" ), QgsStacAsset( {}, {}, {}, {}, {} ) );
+  asset = item->assets().value( QStringLiteral( "thumbnail" ), QgsStacAsset( {}, {}, {}, {}, {}, {} ) );
   QCOMPARE( asset.href(), QStringLiteral( "https://storage.googleapis.com/open-cogs/stac-examples/20201211_223832_CS2.jpg" ) );
   QVERIFY( !asset.isCloudOptimized() );
   uri = asset.uri();
@@ -207,7 +207,7 @@ void TestQgsStac::testParseLocalItem()
   QVERIFY( uri.name.isEmpty() );
 
   // normal geotiff is not cloud optimized
-  asset = item->assets().value( QStringLiteral( "udm" ), QgsStacAsset( {}, {}, {}, {}, {} ) );
+  asset = item->assets().value( QStringLiteral( "udm" ), QgsStacAsset( {}, {}, {}, {}, {}, {} ) );
   QVERIFY( !asset.isCloudOptimized() );
   QCOMPARE( asset.formatName(), QString() );
   uri = asset.uri();

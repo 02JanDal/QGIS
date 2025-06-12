@@ -122,6 +122,8 @@ Encodes a URI list to a new QMimeData object.
 
     static UriList decodeUriList( const QMimeData *data );
 
+    static QString uriListMimeType();
+
     static QByteArray layerTreeNodesToUriList( const QList<QgsLayerTreeNode *> &nodes );
 %Docstring
 Returns encoded URI list from a list of layer tree nodes.

@@ -480,6 +480,7 @@ set(QGIS_CORE_SRCS
   qgsexpressioncontext.cpp
   qgsexpressionfieldbuffer.cpp
   qgsfeature.cpp
+  qgsfeatureasset.cpp
   qgsfeaturepickermodel.cpp
   qgsfeaturepickermodelbase.cpp
   qgsfeatureexpressionfilterprovider.cpp
@@ -1178,6 +1179,7 @@ set(QGIS_CORE_HDRS
   qgsexpressioncontextscopegenerator.h
   qgsexpressionfieldbuffer.h
   qgsfeature.h
+  qgsfeatureasset.h
   qgsfeatureexpressionfilterprovider.h
   qgsfeaturepickermodel.h
   qgsfeaturepickermodelbase.h

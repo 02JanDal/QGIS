@@ -16,7 +16,10 @@
  *                                                                         *
  ***************************************************************************/
 
+#include "qgsassetguiutils.h"
 #include "qgsconfig.h"
+#include "qgsfeatureasset.h"
+#include "qgsiconutils.h"
 
 #include <QCloseEvent>
 #include <QLabel>
@@ -45,6 +48,7 @@
 #if defined( HAVE_QTPRINTER )
 #include <QPrinter>
 #include <QPrintDialog>
+#include <QMimeDatabase>
 #endif
 
 //graph
@@ -374,6 +378,7 @@ QgsIdentifyResultsDialog::QgsIdentifyResultsDialog( QgsMapCanvas *canvas, QWidge
   mOpenFormAction->setDisabled( true );
 
   lstResults->setVerticalScrollMode( QListView::ScrollMode::ScrollPerPixel );
+  lstResults->setMimeTypes({QgsMimeDataUtils::uriListMimeType()});
 
   QgsSettings mySettings;
   mDock = new QgsDockWidget( tr( "Identify Results" ), QgisApp::instance() );
@@ -805,6 +810,43 @@ QgsIdentifyResultsFeatureItem *QgsIdentifyResultsDialog::createFeatureItem( QgsV
       attrItem->setData( 1, Qt::DisplayRole, QString() );
       QTreeWidget *treeWidget = attrItem->treeWidget();
       treeWidget->setItemWidget( attrItem, 1, jsonEditWidget );
+    }
+    else if ( !QgsVariantUtils::isNull( attrs.at( i ) ) && setup.type() == QLatin1String( "Assets" ) )
+    {
+      const QVariantMap variantMap = attrs.at( i ).toMap();
+      for ( auto it = variantMap.cbegin(); it != variantMap.cend(); ++it )
+      {
+        const QgsFeatureAsset asset = it.value().value<QgsFeatureAsset>();
+
+        const QString title = asset.title().isEmpty() ? asset.id() : asset.title();
+
+        QgsIdentifyResultsAssetItem *assetItem = new QgsIdentifyResultsAssetItem( asset, vlayer );
+        assetItem->setData( 0, Qt::DisplayRole, asset.title() );
+        assetItem->setData( 0, Qt::ToolTipRole, asset.description() );
+        assetItem->setData( 1, Qt::DisplayRole, asset.formatName().isEmpty() ? tr( "Unknown format" ) : asset.formatName() );
+        assetItem->setData( 1, Qt::ToolTipRole, asset.href() );
+        assetItem->setData( 0, AssetRole, QVariant::fromValue( asset ) );
+
+        if ( asset.uri().isValid() )
+        {
+          //assetItem->setMimeData( std::shared_ptr<QMimeData>( QgsMimeDataUtils::encodeUriList( {asset.uri()} ) ) );
+        }
+
+        try {
+          const Qgis::LayerType layerType = asset.layerType();
+          assetItem->setData( 1, Qt::DecorationRole, QgsIconUtils::iconForLayerType( layerType ) );
+        } catch (std::runtime_error) {}
+
+        attrItem->addChild( assetItem );
+
+        for ( auto it = asset.metadata().cbegin(); it != asset.metadata().cend(); ++it )
+        {
+          QgsTreeWidgetItem *metadataItem = new QgsTreeWidgetItem( QStringList() << it.key() << it.value().toString() );
+          metadataItem->setData( 0, Qt::DisplayRole, it.key() );
+          metadataItem->setData( 1, Qt::DisplayRole, it.value() );
+          assetItem->addChild( metadataItem );
+        }
+      }
     }
     else
     {
@@ -1667,7 +1709,45 @@ void QgsIdentifyResultsDialog::contextMenuEvent( QContextMenuEvent *event )
   mActionPopup = new QMenu();
 
   int idx = -1;
-  // QTreeWidgetItem *featItem = featureItem( item );
+
+  QgsIdentifyResultsAssetItem *assItem = dynamic_cast<QgsIdentifyResultsAssetItem *>( assetItem( item ) );
+  if ( assItem )
+  {
+    mActionPopup->addAction( tr( "Copy URL" ), this, [assItem]() {
+      QgsApplication::clipboard()->setText( assItem->asset().href() );
+    });
+    mActionPopup->addAction( tr( "Open URL in browser" ), this, [assItem]() {
+      QDesktopServices::openUrl( assItem->asset().href() );
+    });
+    mActionPopup->addAction( tr( "Open..." ), this, [assItem, vlayer]() {
+      const QString authCfg = QgsDataSourceUri( vlayer->dataProvider()->dataSourceUri() ).authConfigId();
+      const QString path = QStandardPaths::writableLocation(QStandardPaths::DownloadLocation);
+
+      QString *fileName = new QString();
+      QgsTask *task = QgsAssetGuiUtils::downloadAsset( assItem->asset(), path, authCfg, QgisApp::instance()->messageBar(), fileName );
+      connect( task, &QgsTask::taskCompleted, [fileName]() {
+        QDesktopServices::openUrl( QUrl::fromLocalFile( *fileName ) );
+      });
+      connect( task, &QgsTask::destroyed, [fileName]() {
+        delete fileName;
+      });
+    });
+    if ( assItem->asset().uri().isValid() )
+    {
+      try {
+        const Qgis::LayerType layerType = assItem->asset().layerType();
+        mActionPopup->addAction( QgsIconUtils::iconForLayerType( layerType ),
+                                 tr( "Add as layer" ),
+                                 this,
+                                 [assItem, vlayer]() {
+          QgisApp::instance()->handleDropUriList( {assItem->asset().uriFromLayer( vlayer )} );
+        });
+      } catch (std::runtime_error) {}
+    }
+
+    mActionPopup->addSeparator();
+  }
+
   QgsIdentifyResultsFeatureItem *featItem = dynamic_cast<QgsIdentifyResultsFeatureItem *>( featureItem( item ) );
   if ( featItem )
   {
@@ -1936,6 +2016,22 @@ void QgsIdentifyResultsDialog::doMapLayerAction( QTreeWidgetItem *item, QgsMapLa
   action->triggerForFeature( layer, feat, context );
 }
 
+QTreeWidgetItem *QgsIdentifyResultsDialog::assetItem( QTreeWidgetItem *item )
+{
+  if ( !item )
+    return nullptr;
+
+  QTreeWidgetItem *i = item;
+  while ( i )
+  {
+    if ( i->data( 0, AssetRole ).isValid() )
+    {
+      return i;
+    }
+    i = i->parent();
+  }
+  return nullptr;
+}
 QTreeWidgetItem *QgsIdentifyResultsDialog::featureItem( QTreeWidgetItem *item )
 {
   if ( !item )
@@ -2834,4 +2930,9 @@ void QgsIdentifyResultsDialog::setExpressionContextScope( const QgsExpressionCon
 QgsExpressionContextScope QgsIdentifyResultsDialog::expressionContextScope() const
 {
   return mExpressionContextScope;
+}
+
+QgsIdentifyResultsAssetItem::QgsIdentifyResultsAssetItem(const QgsFeatureAsset &asset, QgsVectorLayer *layer)
+  : mAsset( asset ), mLayer( layer )
+{
 }

@@ -182,6 +182,7 @@ bool QgsOapifProvider::init()
     mShared->mServerSupportsBasicSpatialFunctions = ( conformanceClasses.contains( QLatin1String( "http://www.opengis.net/spec/cql2/1.0/conf/basic-spatial-functions" ) ) ||
                                                       // Two below names are deprecated
                                                       conformanceClasses.contains( QLatin1String( "http://www.opengis.net/spec/cql2/0.0/conf/basic-spatial-operators" ) ) || conformanceClasses.contains( QLatin1String( "http://www.opengis.net/spec/cql2/1.0/conf/basic-spatial-operators" ) ) );
+    mShared->mServerSupportsStac = conformanceClasses.contains( QLatin1String( "https://api.stacspec.org/v1.0.0/core" ) );
     implementsSchemas = conformanceClasses.contains( QLatin1String( "http://www.opengis.net/spec/ogcapi-features-5/1.0/conf/schemas" ) );
   }
 
@@ -243,7 +244,7 @@ bool QgsOapifProvider::init()
 
   mShared->mItemsUrl = mShared->mCollectionUrl + QStringLiteral( "/items" );
 
-  QgsOapifItemsRequest itemsRequest( mShared->mURI.uri(), mShared->appendExtraQueryParameters( mShared->mItemsUrl + QStringLiteral( "?limit=10" ) ) );
+  QgsOapifItemsRequest itemsRequest( mShared->mURI.uri(), mShared->appendExtraQueryParameters( mShared->mItemsUrl + QStringLiteral( "?limit=10" ) ), mShared->mServerSupportsStac );
   if ( mShared->mCapabilityExtent.isNull() )
   {
     itemsRequest.setComputeBbox();
@@ -367,7 +368,7 @@ long long QgsOapifProvider::featureCount() const
       url += mShared->mServerFilter;
     }
 
-    QgsOapifItemsRequest itemsRequest( mShared->mURI.uri(), url );
+    QgsOapifItemsRequest itemsRequest( mShared->mURI.uri(), url, false );
     if ( !itemsRequest.request( true, false ) )
       return -1;
     if ( itemsRequest.errorCode() != QgsBaseNetworkRequest::NoError )
@@ -923,6 +924,7 @@ QgsOapifSharedData *QgsOapifSharedData::clone() const
   copy->mServerSupportsLikeBetweenIn = mServerSupportsLikeBetweenIn;
   copy->mServerSupportsCaseI = mServerSupportsCaseI;
   copy->mServerSupportsBasicSpatialFunctions = mServerSupportsBasicSpatialFunctions;
+  copy->mServerSupportsStac = mServerSupportsStac;
   copy->mQueryables = mQueryables;
   QgsBackgroundCachedSharedData::copyStateToClone( copy );
 
@@ -1387,7 +1389,7 @@ void QgsOapifFeatureDownloaderImpl::run( bool serializeFeatures, long long maxFe
       break;
     }
 
-    QgsOapifItemsRequest itemsRequest( mShared->mURI.uri(), url );
+    QgsOapifItemsRequest itemsRequest( mShared->mURI.uri(), url, mShared->mServerSupportsStac );
     connect( &itemsRequest, &QgsOapifItemsRequest::gotResponse, &loop, &QEventLoop::quit );
     itemsRequest.request( false /* synchronous*/, true /* forceRefresh */ );
     loop.exec( QEventLoop::ExcludeUserInputEvents );

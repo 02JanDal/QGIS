@@ -13,6 +13,7 @@
  *                                                                         *
  ***************************************************************************/
 
+#include "qgsassetguiutils.h"
 #include "qgsstacdownloadassetsdialog.h"
 #include "moc_qgsstacdownloadassetsdialog.cpp"
 #include "qgsgui.h"
@@ -56,77 +57,10 @@ QgsStacDownloadAssetsDialog::QgsStacDownloadAssetsDialog( QWidget *parent )
 void QgsStacDownloadAssetsDialog::accept()
 {
   const QString folder = selectedFolder();
-  const QStringList urls = selectedUrls();
-  for ( const QString &url : urls )
+  const QList<QgsFeatureAsset> assets = selectedAssets();
+  for ( const QgsFeatureAsset &asset : assets )
   {
-    QgsNetworkContentFetcherTask *fetcher = new QgsNetworkContentFetcherTask( url, mAuthCfg, QgsTask::CanCancel, tr( "Downloading STAC asset" ) );
-
-    connect( fetcher, &QgsNetworkContentFetcherTask::errorOccurred, fetcher, [bar = mMessageBar]( QNetworkReply::NetworkError, const QString &errorMsg ) {
-      if ( bar )
-        bar->pushMessage(
-          tr( "Error downloading STAC asset" ),
-          errorMsg,
-          Qgis::MessageLevel::Critical
-        );
-    } );
-
-    connect( fetcher, &QgsNetworkContentFetcherTask::fetched, fetcher, [fetcher, folder, bar = mMessageBar] {
-      QNetworkReply *reply = fetcher->reply();
-      if ( !reply || reply->error() != QNetworkReply::NoError )
-      {
-        // canceled or failed
-        return;
-      }
-      else
-      {
-        const QString fileName = fetcher->contentDispositionFilename().isEmpty() ? reply->url().fileName() : fetcher->contentDispositionFilename();
-        QFileInfo fi( fileName );
-        QFile file( QStringLiteral( "%1/%2" ).arg( folder, fileName ) );
-        int i = 1;
-        while ( file.exists() )
-        {
-          QString uniqueName = QStringLiteral( "%1/%2(%3)" ).arg( folder, fi.baseName() ).arg( i++ );
-          if ( !fi.completeSuffix().isEmpty() )
-            uniqueName.append( QStringLiteral( ".%1" ).arg( fi.completeSuffix() ) );
-          file.setFileName( uniqueName );
-        }
-
-        bool failed = false;
-        if ( file.open( QIODevice::WriteOnly ) )
-        {
-          const QByteArray data = reply->readAll();
-          if ( file.write( data ) < 0 )
-            failed = true;
-
-          file.close();
-        }
-        else
-        {
-          failed = true;
-        }
-
-        if ( failed )
-        {
-          if ( bar )
-            bar->pushMessage(
-              tr( "Error downloading STAC asset" ),
-              tr( "Could not write to file %1" ).arg( file.fileName() ),
-              Qgis::MessageLevel::Critical
-            );
-        }
-        else
-        {
-          if ( bar )
-            bar->pushMessage(
-              tr( "STAC asset downloaded" ),
-              file.fileName(),
-              Qgis::MessageLevel::Success
-            );
-        }
-      }
-    } );
-
-    QgsApplication::taskManager()->addTask( fetcher );
+    QgsAssetGuiUtils::downloadAsset( asset, folder, mAuthCfg, mMessageBar );
   }
 
   QDialog::accept();
@@ -164,26 +98,27 @@ void QgsStacDownloadAssetsDialog::setStacItem( QgsStacItem *stacItem )
     item->setToolTip( 4, it->mediaType() );
     item->setText( 5, it->href() );
     item->setToolTip( 5, it->href() );
+    item->setData( 0, Qt::UserRole, QVariant::fromValue( *it ) );
 
     mTreeWidget->addTopLevelItem( item );
   }
 }
 
-QString QgsStacDownloadAssetsDialog::selectedFolder()
+QString QgsStacDownloadAssetsDialog::selectedFolder() const
 {
   return mFileWidget->filePath();
 }
 
-QStringList QgsStacDownloadAssetsDialog::selectedUrls()
+QList<QgsFeatureAsset> QgsStacDownloadAssetsDialog::selectedAssets() const
 {
-  QStringList urls;
+  QList<QgsFeatureAsset> assets;
   for ( int i = 0; i < mTreeWidget->topLevelItemCount(); ++i )
   {
     QTreeWidgetItem *item = mTreeWidget->topLevelItem( i );
     if ( item->checkState( 0 ) == Qt::Checked )
-      urls.append( item->text( 5 ) );
+      assets.append( item->data( 0, Qt::UserRole ).value<QgsStacAsset>() );
   }
-  return urls;
+  return assets;
 }
 
 void QgsStacDownloadAssetsDialog::showContextMenu( QPoint p )

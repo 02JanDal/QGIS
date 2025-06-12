@@ -8,6 +8,7 @@ try:
     QgsMimeDataUtils.encodeUriList = staticmethod(QgsMimeDataUtils.encodeUriList)
     QgsMimeDataUtils.isUriList = staticmethod(QgsMimeDataUtils.isUriList)
     QgsMimeDataUtils.decodeUriList = staticmethod(QgsMimeDataUtils.decodeUriList)
+    QgsMimeDataUtils.uriListMimeType = staticmethod(QgsMimeDataUtils.uriListMimeType)
     QgsMimeDataUtils.layerTreeNodesToUriList = staticmethod(QgsMimeDataUtils.layerTreeNodesToUriList)
     QgsMimeDataUtils.hasOriginatedFromCurrentAppInstance = staticmethod(QgsMimeDataUtils.hasOriginatedFromCurrentAppInstance)
 except (NameError, AttributeError):

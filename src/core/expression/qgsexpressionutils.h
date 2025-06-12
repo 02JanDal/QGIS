@@ -17,6 +17,7 @@
 #ifndef QGSEXPRESSIONUTILS_H
 #define QGSEXPRESSIONUTILS_H
 
+#include "qgsfeatureasset.h"
 #define SIP_NO_FILE
 
 #include "qgsfeature.h"
@@ -445,6 +446,10 @@ class CORE_EXPORT QgsExpressionUtils
       if ( value.userType() == QMetaType::Type::QVariantMap )
       {
         return value.toMap();
+      }
+      else if ( value.userType() == qMetaTypeId<QgsFeatureAsset>() )
+      {
+        return value.value<QgsFeatureAsset>().toMap();
       }
       else
       {

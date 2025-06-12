@@ -16,6 +16,7 @@
 #include "qgsbackgroundcachedshareddata.h"
 #include "qgsbackgroundcachedfeatureiterator.h"
 
+#include "qgsfeatureasset.h"
 #include "qgslogger.h"
 #include "qgsmessagelog.h"
 #include "qgsproviderregistry.h"
@@ -632,6 +633,16 @@ void QgsBackgroundCachedSharedData::serializeFeatures( QVector<QgsFeatureUniqueI
         const QMetaType::Type fieldType = dataProviderFields.at( idx ).type();
         if ( v.userType() == QMetaType::Type::QDateTime && !QgsVariantUtils::isNull( v ) )
           cachedFeature.setAttribute( idx, QVariant( v.toDateTime().toMSecsSinceEpoch() ) );
+        else if ( v.userType() == QMetaType::Type::QVariantMap && mFields.at( i ).subType() == qMetaTypeId<QgsFeatureAsset>() )
+        {
+          const QVariantMap map = v.toMap();
+          QJsonObject obj;
+          for ( auto it = map.cbegin(); it != map.cend(); ++it )
+          {
+            obj.insert( it.key(), it.value().value<QgsFeatureAsset>().toJson() );
+          }
+          cachedFeature.setAttribute( idx, QString::fromUtf8( QJsonDocument( obj ).toJson() ) );
+        }
         else if ( v.userType() == QMetaType::Type::QVariantMap && !QgsVariantUtils::isNull( v ) )
         {
           QString stringValue = QString::fromUtf8( QJsonDocument::fromVariant( v ).toJson().constData() );

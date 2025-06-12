@@ -155,6 +155,7 @@ const QgsSettingsEntryInteger *QgsApplication::settingsConnectionPoolMaximumConc
 #endif
 
 #include "qgsconfig.h"
+#include "qgsfeatureasset.h"
 
 #include <gdal.h>
 #include <ogr_api.h>
@@ -258,6 +259,7 @@ void registerMetaTypes()
   qRegisterMetaType<QgsNetworkRequestParameters>( "QgsNetworkRequestParameters" );
   qRegisterMetaType<QgsNetworkReplyContent>( "QgsNetworkReplyContent" );
   qRegisterMetaType<QgsFeature>( "QgsFeature" );
+  qRegisterMetaType<QgsFeatureAsset>( "QgsFeatureAsset" );
   qRegisterMetaType<QgsGeometry>( "QgsGeometry" );
   qRegisterMetaType<QgsInterval>( "QgsInterval" );
   qRegisterMetaType<QgsRectangle>( "QgsRectangle" );
@@ -274,6 +276,7 @@ void registerMetaTypes()
   // Qt6 documentation says these are not needed anymore (https://www.qt.io/blog/whats-new-in-qmetatype-qvariant) #spellok
   // TODO: when tests can run against Qt6 builds, check for any regressions
   qRegisterMetaTypeStreamOperators<QgsProcessingModelChildParameterSource>( "QgsProcessingModelChildParameterSource" );
+  qRegisterMetaTypeStreamOperators<QgsFeatureAsset>( "QgsFeatureAsset" );
 #endif
   qRegisterMetaType<QgsRemappingSinkDefinition>( "QgsRemappingSinkDefinition" );
   qRegisterMetaType<QgsProcessingModelChildDependency>( "QgsProcessingModelChildDependency" );

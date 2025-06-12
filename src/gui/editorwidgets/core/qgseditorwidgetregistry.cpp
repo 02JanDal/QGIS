@@ -25,6 +25,7 @@
 #include "qgsapplication.h"
 
 // Editors
+#include "qgsassetswidgetfactory.h"
 #include "qgsbinarywidgetfactory.h"
 #include "qgsclassificationwidgetwrapperfactory.h"
 #include "qgscheckboxwidgetfactory.h"
@@ -66,6 +67,7 @@ void QgsEditorWidgetRegistry::initEditors( QgsMapCanvas *mapCanvas, QgsMessageBa
   registerWidget( QStringLiteral( "RelationReference" ), new QgsRelationReferenceFactory( tr( "Relation Reference" ), mapCanvas, messageBar ) );
   registerWidget( QStringLiteral( "DateTime" ), new QgsDateTimeEditFactory( tr( "Date/Time" ) ) );
   registerWidget( QStringLiteral( "ExternalResource" ), new QgsExternalResourceWidgetFactory( tr( "Attachment" ), messageBar ) );
+  registerWidget( QStringLiteral( "Assets" ), new QgsAssetsWidgetFactory( tr( "Assets" ), messageBar ) );
   registerWidget( QStringLiteral( "KeyValue" ), new QgsKeyValueWidgetFactory( tr( "Key/Value" ) ) );
   registerWidget( QStringLiteral( "List" ), new QgsListWidgetFactory( tr( "List" ) ) );
   registerWidget( QStringLiteral( "Binary" ), new QgsBinaryWidgetFactory( tr( "Binary (BLOB)" ), messageBar ) );

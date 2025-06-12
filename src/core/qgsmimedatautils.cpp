@@ -226,6 +226,11 @@ QgsMimeDataUtils::UriList QgsMimeDataUtils::decodeUriList( const QMimeData *data
   return list;
 }
 
+QString QgsMimeDataUtils::uriListMimeType()
+{
+  return QGIS_URILIST_MIMETYPE;
+}
+
 
 static void _addLayerTreeNodeToUriList( QgsLayerTreeNode *node, QgsMimeDataUtils::UriList &uris )
 {

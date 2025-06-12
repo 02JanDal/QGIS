@@ -432,11 +432,22 @@ QMap<QString, QgsStacAsset> QgsStacParser::parseAssets( const json &data )
     if ( assetUrl.isRelative() )
       assetUrl = mBaseUrl.resolved( assetUrl );
 
-    const QgsStacAsset a( assetUrl.toString(),
+    QVariantMap metadata;
+    for ( const auto &entry : value.items() )
+    {
+      if ( entry.key() != "href" && entry.key() != "title" && entry.key() != "description" && entry.key() != "type" && entry.key() != "roles" )
+      {
+        metadata.insert( QString::fromStdString( entry.key() ), QgsJsonUtils::jsonToVariant( entry.value() ) );
+      }
+    }
+
+    const QgsStacAsset a( QString::fromStdString( asset.key() ),
+                          assetUrl.toString(),
                           value.contains( "title" ) ? getString( value["title"] ) : QString(),
                           value.contains( "description" ) ? getString( value["description"] ) : QString(),
                           value.contains( "type" ) ? getString( value["type"] ) : QString(),
-                          value.contains( "roles" ) ? QgsJsonUtils::jsonToVariant( value["roles"] ).toStringList() : QStringList() );
+                          value.contains( "roles" ) ? QgsJsonUtils::jsonToVariant( value["roles"] ).toStringList() : QStringList(),
+                          metadata );
     assets.insert( QString::fromStdString( asset.key() ), a );
   }
   return assets;

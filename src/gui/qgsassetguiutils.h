@@ -1,9 +1,10 @@
 /***************************************************************************
-    qgsstacasset.cpp
-    ---------------------
-    begin                : October 2024
-    copyright            : (C) 2024 by Stefanos Natsis
-    email                : uclaros at gmail dot com
+   qgsassetguiutils.h
+
+ ---------------------
+ begin                : 2025-06-11
+ copyright            : (C) Jan Dalheimer
+ email                : jan at dalheimer dot de
  ***************************************************************************
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -13,6 +14,21 @@
  *                                                                         *
  ***************************************************************************/
 
-#include "qgsstacasset.h"
+#ifndef QGSASSETGUIUTILS_H
+#define QGSASSETGUIUTILS_H
 
-QgsStacAsset::QgsStacAsset(const QString &id, const QString &href, const QString &title, const QString &description, const QString &mediaType, const QStringList &roles, const QVariantMap &metadata) : QgsFeatureAsset(id, href, title, description, mediaType, roles, metadata) {}
+#include <QCoreApplication>
+#include "qgis_gui.h"
+
+class QgsTask;
+class QgsMessageBar;
+class QgsFeatureAsset;
+
+class GUI_EXPORT QgsAssetGuiUtils
+{
+    Q_DECLARE_TR_FUNCTIONS( QgsAssetGuiUtils )
+  public:
+    static QgsTask *downloadAsset(const QgsFeatureAsset &asset , const QString &destinationFolder, const QString &authCfg, QgsMessageBar *messageBar, QString *destinationFile = nullptr );
+};
+
+#endif // QGSASSETGUIUTILS_H

@@ -21,6 +21,7 @@
 #include "qgsreferencedgeometry.h"
 #include "qgsvariantutils.h"
 #include "qgsunsetattributevalue.h"
+#include "qgsfeatureasset.h"
 
 #include <QDataStream>
 #include <QIcon>
@@ -337,6 +338,11 @@ QString QgsField::displayString( const QVariant &v ) const
       QString formattedText = QStringLiteral( "%1 [%2]" ).arg( wkt, geom.crs().userFriendlyIdentifier() );
       return formattedText;
     }
+  }
+  else if ( d->type == QMetaType::Type::QVariantMap && d->subType == qMetaTypeId<QgsFeatureAsset>() )
+  {
+    const QVariantMap map = v.toMap();
+    return QCoreApplication::translate( "QgsField", "%1 asset(s)", nullptr, map.count() ).arg( map.count() );
   }
 
   // Special treatment for numeric types if group separator is set or decimalPoint is not a dot

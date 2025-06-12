@@ -31,7 +31,7 @@ class QgsOapifItemsRequest : public QgsBaseNetworkRequest
 {
     Q_OBJECT
   public:
-    explicit QgsOapifItemsRequest( const QgsDataSourceUri &uri, const QString &url );
+    explicit QgsOapifItemsRequest( const QgsDataSourceUri &uri, const QString &url, const bool readStacAssets );
 
     //! Ask to compute the bbox of the returned items.
     void setComputeBbox() { mComputeBbox = true; }
@@ -86,6 +86,8 @@ class QgsOapifItemsRequest : public QgsBaseNetworkRequest
 
   private:
     QString mUrl;
+
+    bool mReadStacAssets;
 
     bool mComputeBbox = false;
 

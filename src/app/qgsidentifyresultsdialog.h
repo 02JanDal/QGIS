@@ -19,6 +19,7 @@
 #define QGSIDENTIFYRESULTSDIALOG_H
 
 #include "qgis_app.h"
+#include "qgsfeatureasset.h"
 #include "ui_qgsidentifyresultsbase.h"
 #include "qgshelp.h"
 #include "qgsfeature.h"
@@ -87,6 +88,18 @@ class APP_EXPORT QgsIdentifyResultsFeatureItem : public QTreeWidgetItem
     QgsFields mFields;
     QgsFeature mFeature;
     QgsCoordinateReferenceSystem mCrs;
+};
+
+class APP_EXPORT QgsIdentifyResultsAssetItem : public QTreeWidgetItem
+{
+  public:
+    QgsIdentifyResultsAssetItem( const QgsFeatureAsset &asset, QgsVectorLayer *layer );
+
+    const QgsFeatureAsset &asset() const { return mAsset; }
+
+  private:
+    QgsFeatureAsset mAsset;
+    QgsVectorLayer *mLayer;
 };
 
 //! Tree widget item being the parent item of a referenced or referencing relation
@@ -318,6 +331,7 @@ class APP_EXPORT QgsIdentifyResultsDialog : public QDialog, private Ui::QgsIdent
     {
       GetFeatureInfoUrlRole = Qt::UserRole + 10,
       FeatureRole,
+      AssetRole,
     };
 
     QMenu *mActionPopup = nullptr;
@@ -336,6 +350,7 @@ class APP_EXPORT QgsIdentifyResultsDialog : public QDialog, private Ui::QgsIdent
     QgsPointCloudLayer *pointCloudLayer( QTreeWidgetItem *item );
     QgsTiledSceneLayer *tiledSceneLayer( QTreeWidgetItem *item );
     QTreeWidgetItem *featureItem( QTreeWidgetItem *item );
+    QTreeWidgetItem *assetItem( QTreeWidgetItem *item );
     QTreeWidgetItem *layerItem( QTreeWidgetItem *item );
     QTreeWidgetItem *layerItem( QObject *layer );
 

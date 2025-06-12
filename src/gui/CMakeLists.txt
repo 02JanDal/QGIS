@@ -200,6 +200,8 @@ set(QGIS_GUI_SRCS
   editorwidgets/qgsexternalresourceconfigdlg.cpp
   editorwidgets/qgsexternalresourcewidgetwrapper.cpp
   editorwidgets/qgsexternalresourcewidgetfactory.cpp
+  editorwidgets/qgsassetswidgetfactory.cpp
+  editorwidgets/qgsassetswidgetwrapper.cpp
   editorwidgets/qgsgeometrywidgetfactory.cpp
   editorwidgets/qgsgeometrywidgetwrapper.cpp
   editorwidgets/qgshiddenwidgetwrapper.cpp
@@ -803,6 +805,7 @@ set(QGIS_GUI_SRCS
   qgstextformatwidget.cpp
   qgstextpreview.cpp
   qgstooltipcombobox.cpp
+  qgstreewidget.cpp
   qgstreewidgetitem.cpp
   qgsunitselectionwidget.cpp
   qgsuserinputwidget.cpp
@@ -817,6 +820,7 @@ set(QGIS_GUI_SRCS
   qgswidgetstatehelper_p.cpp
   qgssourceselectprovider.cpp
   qgssourceselectproviderregistry.cpp
+  qgsassetguiutils.cpp
 )
 
 set(QGIS_GUI_HDRS
@@ -1080,6 +1084,7 @@ set(QGIS_GUI_HDRS
   qgstextformatwidget.h
   qgstextpreview.h
   qgstooltipcombobox.h
+  qgstreewidget.h
   qgstreewidgetitem.h
   qgsunitselectionwidget.h
   qgsuserinputwidget.h
@@ -1089,6 +1094,7 @@ set(QGIS_GUI_HDRS
   qgsvertexmarker.h
   qgsvscrollarea.h
   qgswindowmanagerinterface.h
+  qgsassetguiutils.h
 
   actions/qgsactionmenu.h
   actions/qgsmaplayeraction.h
@@ -1198,6 +1204,8 @@ set(QGIS_GUI_HDRS
   editorwidgets/qgsexternalresourceconfigdlg.h
   editorwidgets/qgsexternalresourcewidgetfactory.h
   editorwidgets/qgsexternalresourcewidgetwrapper.h
+  editorwidgets/qgsassetswidgetfactory.h
+  editorwidgets/qgsassetswidgetwrapper.h
   editorwidgets/qgsgeometrywidgetfactory.h
   editorwidgets/qgsgeometrywidgetwrapper.h
   editorwidgets/qgshiddenwidgetfactory.h
