@@ -85,6 +85,7 @@ QgsMimeDataUtils::Uri::Uri( QgsMapLayer *layer )
     case Qgis::LayerType::PointCloud:
     case Qgis::LayerType::VectorTile:
     case Qgis::LayerType::TiledScene:
+    case Qgis::LayerType::Survey:
     {
       break;
     }

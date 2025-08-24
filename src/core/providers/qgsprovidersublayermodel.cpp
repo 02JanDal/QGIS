@@ -230,6 +230,7 @@ QVariant QgsProviderSublayerModelSublayerNode::data( int role, int column ) cons
             case Qgis::LayerType::PointCloud:
             case Qgis::LayerType::Group:
             case Qgis::LayerType::TiledScene:
+            case Qgis::LayerType::Survey:
               return mSublayer.description();
           }
           break;

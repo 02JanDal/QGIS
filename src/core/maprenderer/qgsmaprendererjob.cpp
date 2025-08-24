@@ -291,6 +291,7 @@ bool QgsMapRendererJob::prepareLabelCache() const
       case Qgis::LayerType::PointCloud:
       case Qgis::LayerType::Group:
       case Qgis::LayerType::TiledScene:
+      case Qgis::LayerType::Survey:
         break;
     }
 
@@ -366,6 +367,7 @@ bool QgsMapRendererJob::labelingHasNonDefaultCompositionModes() const
       case Qgis::LayerType::PointCloud:
       case Qgis::LayerType::Group:
       case Qgis::LayerType::TiledScene:
+      case Qgis::LayerType::Survey:
         break;
     }
   }

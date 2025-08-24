@@ -288,6 +288,7 @@ void QgsLayerStylingWidget::setLayer( QgsMapLayer *layer )
     case Qgis::LayerType::Annotation:
     case Qgis::LayerType::Group:
     case Qgis::LayerType::TiledScene:
+    case Qgis::LayerType::Survey:
       break;
   }
 

@@ -760,6 +760,7 @@ set(QGIS_CORE_SRCS
   project/qgsproject.cpp
   project/qgsprojectbadlayerhandler.cpp
   project/qgsprojectelevationproperties.cpp
+  project/qgsprojectsurveyproperties.cpp
   project/qgsprojectfiletransform.cpp
   project/qgsprojectdisplaysettings.cpp
   project/qgsprojectgpssettings.cpp
@@ -1840,6 +1841,7 @@ set(QGIS_CORE_HDRS
   project/qgsprojectbadlayerhandler.h
   project/qgsprojectdisplaysettings.h
   project/qgsprojectelevationproperties.h
+  project/qgsprojectsurveyproperties.h
   project/qgsprojectfiletransform.h
   project/qgsprojectgpssettings.h
   project/qgsprojectproperty.h
@@ -2441,6 +2443,7 @@ target_include_directories(qgis_core PUBLIC
   settings
   sensor
   stac
+  survey
   symbology
   textrenderer
   tiledscene
@@ -2565,6 +2568,28 @@ endif()
 
 if (WITH_SPATIALITE)
   target_link_libraries(qgis_core spatialite::spatialite)
+endif()
+
+if (WITH_SURVEY)
+  target_link_libraries(qgis_core libgama)
+  target_sources(qgis_core PRIVATE
+    survey/qgssurveydataprovider.h
+    survey/qgssurveydataprovider.cpp
+    survey/qgssurveydatainterface.h
+    survey/qgssurveydatainterface.cpp
+    survey/qgssurveydata.h
+    survey/qgssurveydata.cpp
+    survey/qgssurveylayer.h
+    survey/qgssurveylayer.cpp
+    survey/qgssurveylayerrenderer.h
+    survey/qgssurveylayerrenderer.cpp
+    survey/qgssurveycoordinateapproximationtask.h
+    survey/qgssurveycoordinateapproximationtask.cpp
+    survey/qgssurveyadjustment.h
+    survey/qgssurveyadjustment.cpp
+    survey/qgssurveyobservationmodel.h
+    survey/qgssurveyobservationmodel.cpp
+  )
 endif()
 
 if (BUILD_WITH_QT6)

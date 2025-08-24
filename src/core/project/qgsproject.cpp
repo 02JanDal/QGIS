@@ -37,6 +37,7 @@
 #include "qgsreadwritecontext.h"
 #include "qgsrelationmanager.h"
 #include "qgsannotationmanager.h"
+#include "qgssurveylayer.h"
 #include "qgsvectorlayerjoinbuffer.h"
 #include "qgsmapthemecollection.h"
 #include "qgslayerdefinition.h"
@@ -76,6 +77,7 @@
 #include "qgssettingsregistrycore.h"
 #include "qgspluginlayer.h"
 #include "qgspythonrunner.h"
+#include "qgsprojectsurveyproperties.h"
 
 #include <algorithm>
 #include <QApplication>
@@ -369,6 +371,7 @@ QgsProject::QgsProject( QObject *parent, Qgis::ProjectCapabilities capabilities 
   , mStyleSettings( new QgsProjectStyleSettings( this ) )
   , mTimeSettings( new QgsProjectTimeSettings( this ) )
   , mElevationProperties( new QgsProjectElevationProperties( this ) )
+  , mSurveyProperties( new QgsProjectSurveyProperties( this ) )
   , mDisplaySettings( new QgsProjectDisplaySettings( this ) )
   , mGpsSettings( new QgsProjectGpsSettings( this ) )
   , mRootGroup( std::make_unique<QgsLayerTree>() )
@@ -1221,6 +1224,7 @@ void QgsProject::clear()
   mViewSettings->reset();
   mTimeSettings->reset();
   mElevationProperties->reset();
+  mSurveyProperties->reset();
   mDisplaySettings->reset();
   mGpsSettings->reset();
   mSnappingConfig.reset();
@@ -1834,6 +1838,10 @@ bool QgsProject::addLayer( const QDomElement &layerElem,
 
     case Qgis::LayerType::TiledScene:
       mapLayer = std::make_unique<QgsTiledSceneLayer>();
+      break;
+
+    case Qgis::LayerType::Survey:
+      mapLayer = std::make_unique<QgsSurveyLayer>();
       break;
 
     case Qgis::LayerType::Plugin:
@@ -2601,6 +2609,13 @@ bool QgsProject::readProjectFile( const QString &filename, Qgis::ProjectReadFlag
   if ( !elevationPropertiesElement.isNull() )
     mElevationProperties->readXml( elevationPropertiesElement, context );
   mElevationProperties->resolveReferences( this );
+
+
+  profile.switchTask( tr( "Loading survey properties" ) );
+  const QDomElement surveyPropertiesElement = doc->documentElement().firstChildElement( QStringLiteral( "SurveyProperties" ) );
+  if ( !surveyPropertiesElement.isNull() )
+    mSurveyProperties->readXml( surveyPropertiesElement, context );
+  mSurveyProperties->resolveReferences( this );
 
   profile.switchTask( tr( "Loading display settings" ) );
   {
@@ -3498,6 +3513,11 @@ bool QgsProject::writeProjectFile( const QString &filename )
   }
 
   {
+    const QDomElement surveyPropertiesElement = mSurveyProperties->writeXml( *doc, context );
+    qgisNode.appendChild( surveyPropertiesElement );
+  }
+
+  {
     const QDomElement displaySettingsElem = mDisplaySettings->writeXml( *doc, context );
     qgisNode.appendChild( displaySettingsElem );
   }
@@ -4389,6 +4409,20 @@ QgsProjectElevationProperties *QgsProject::elevationProperties()
   QGIS_PROTECT_QOBJECT_THREAD_ACCESS
 
   return mElevationProperties;
+}
+
+const QgsProjectSurveyProperties *QgsProject::surveyProperties() const
+{
+  QGIS_PROTECT_QOBJECT_THREAD_ACCESS
+
+  return mSurveyProperties;
+}
+
+QgsProjectSurveyProperties *QgsProject::surveyProperties()
+{
+  QGIS_PROTECT_QOBJECT_THREAD_ACCESS
+
+  return mSurveyProperties;
 }
 
 const QgsProjectDisplaySettings *QgsProject::displaySettings() const

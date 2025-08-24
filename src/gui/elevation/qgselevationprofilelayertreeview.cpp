@@ -192,6 +192,7 @@ QVariant QgsElevationProfileLayerTreeModel::data( const QModelIndex &index, int 
             case Qgis::LayerType::PointCloud:
             case Qgis::LayerType::Group:
             case Qgis::LayerType::TiledScene:
+            case Qgis::LayerType::Survey:
               break;
           }
           if ( !symbol )

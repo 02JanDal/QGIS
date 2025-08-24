@@ -389,6 +389,16 @@ if (WITH_3D)
   )
 endif()
 
+if (WITH_SURVEY)
+  set(QGIS_APP_SRCS
+    ${QGIS_APP_SRCS}
+    survey/qgssurveylayerproperties.cpp
+    survey/qgssurveylayerstylewidget.cpp
+    survey/qgssurveyattributesdialog.cpp
+    project/qgsprojectsurveysettingswidget.cpp
+  )
+endif()
+
 find_package(${QT_VERSION_BASE} COMPONENTS UiTools REQUIRED)
 
 # Test data dir for QgsAppScreenShots

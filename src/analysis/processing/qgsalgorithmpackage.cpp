@@ -421,6 +421,12 @@ QVariantMap QgsPackageAlgorithm::processAlgorithm( const QVariantMap &parameters
         feedback->pushDebugInfo( QObject::tr( "Packaging tiled scene layers is not supported." ) );
         errored = true;
         break;
+
+      case Qgis::LayerType::Survey:
+        //not supported
+        feedback->pushDebugInfo( QObject::tr( "Packaging survey layers is not supported." ) );
+        errored = true;
+        break;
     }
   }
 

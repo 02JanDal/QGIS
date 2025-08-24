@@ -221,6 +221,7 @@ class GUI_EXPORT QgsOptionsDialogBase : public QDialog
 
     QString mOptsKey;
     bool mInit = false;
+    bool mRestored = false;
     QListWidget *mOptListWidget = nullptr;
     QTreeView *mOptTreeView = nullptr;
     QStandardItemModel *mOptTreeModel = nullptr;

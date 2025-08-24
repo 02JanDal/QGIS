@@ -25,6 +25,8 @@
 #include "qgsgrouplayer.h"
 #include "qgstiledscenelayer.h"
 
+#include <qgssurveylayer.h>
+
 Qgis::LayerType QgsMapLayerFactory::typeFromString( const QString &string, bool &ok )
 {
   ok = true;
@@ -50,6 +52,8 @@ Qgis::LayerType QgsMapLayerFactory::typeFromString( const QString &string, bool 
     return Qgis::LayerType::Group;
   else if ( string.compare( QLatin1String( "tiled-scene" ), Qt::CaseInsensitive ) == 0 )
     return Qgis::LayerType::TiledScene;
+  else if ( string.compare( QLatin1String( "survey" ), Qt::CaseInsensitive ) == 0 )
+    return Qgis::LayerType::Survey;
 
   ok = false;
   return Qgis::LayerType::Vector;
@@ -77,6 +81,8 @@ QString QgsMapLayerFactory::typeToString( Qgis::LayerType type )
       return QStringLiteral( "group" );
     case Qgis::LayerType::TiledScene:
       return QStringLiteral( "tiled-scene" );
+    case Qgis::LayerType::Survey:
+      return QStringLiteral( "survey" );
   }
   return QString();
 }
@@ -142,6 +148,13 @@ QgsMapLayer *QgsMapLayerFactory::createLayer( const QString &uri, const QString 
       tiledSceneOptions.loadDefaultStyle = options.loadDefaultStyle;
       tiledSceneOptions.transformContext = options.transformContext;
       return new QgsTiledSceneLayer( uri, name, provider, tiledSceneOptions );
+    }
+
+    case Qgis::LayerType::Survey:
+    {
+      QgsSurveyLayer::LayerOptions surveyOptions;
+      surveyOptions.transformContext = options.transformContext;
+      return new QgsSurveyLayer( uri, name, provider, surveyOptions );
     }
 
     case Qgis::LayerType::Plugin:

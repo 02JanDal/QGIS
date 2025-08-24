@@ -70,6 +70,7 @@
 #include <QMessageBox>
 #include <QFileDialog>
 #include <QUrlQuery>
+#include <qgssurveylayer.h>
 
 void QgsAppLayerHandling::postProcessAddedLayer( QgsMapLayer *layer )
 {
@@ -180,6 +181,7 @@ void QgsAppLayerHandling::postProcessAddedLayer( QgsMapLayer *layer )
 
     case Qgis::LayerType::Annotation:
     case Qgis::LayerType::Group:
+    case Qgis::LayerType::Survey:
       break;
 
     case Qgis::LayerType::PointCloud:
@@ -335,6 +337,7 @@ void QgsAppLayerHandling::postProcessAddedLayers( const QList<QgsMapLayer *> &la
       case Qgis::LayerType::PointCloud:
       case Qgis::LayerType::Group:
       case Qgis::LayerType::TiledScene:
+      case Qgis::LayerType::Survey:
         break;
     }
   }
@@ -592,6 +595,7 @@ L *QgsAppLayerHandling::addLayer( const QString &uri, const QString &baseName, c
 template QgsPointCloudLayer *QgsAppLayerHandling::addLayer<QgsPointCloudLayer>( const QString &uri, const QString &baseName, const QString &provider, bool addToLegend, bool showWarningOnInvalid );
 template QgsVectorTileLayer *QgsAppLayerHandling::addLayer<QgsVectorTileLayer>( const QString &uri, const QString &baseName, const QString &provider, bool addToLegend, bool showWarningOnInvalid );
 template QgsTiledSceneLayer *QgsAppLayerHandling::addLayer<QgsTiledSceneLayer>( const QString &uri, const QString &baseName, const QString &provider, bool addToLegend, bool showWarningOnInvalid );
+template QgsSurveyLayer *QgsAppLayerHandling::addLayer<QgsSurveyLayer>( const QString &uri, const QString &baseName, const QString &provider, bool addToLegend, bool showWarningOnInvalid );
 template QgsPluginLayer *QgsAppLayerHandling::addLayer<QgsPluginLayer>( const QString &uri, const QString &baseName, const QString &provider, bool addToLegend, bool showWarningOnInvalid );
 
 
@@ -904,6 +908,7 @@ QList<QgsMapLayer *> QgsAppLayerHandling::openLayer( const QString &fileName, bo
       case Qgis::LayerType::VectorTile:
       case Qgis::LayerType::Group:
       case Qgis::LayerType::TiledScene:
+      case Qgis::LayerType::Survey:
         // not supported here yet!
         break;
 

@@ -51,7 +51,7 @@ QgsOptionsDialogBase::QgsOptionsDialogBase( const QString &settingsKey, QWidget 
 
 QgsOptionsDialogBase::~QgsOptionsDialogBase()
 {
-  if ( mInit )
+  if ( mRestored )
   {
     mSettings->setValue( QStringLiteral( "/Windows/%1/geometry" ).arg( mOptsKey ), saveGeometry() );
     mSettings->setValue( QStringLiteral( "/Windows/%1/splitState" ).arg( mOptsKey ), mOptSplitter->saveState() );
@@ -247,6 +247,8 @@ void QgsOptionsDialogBase::restoreOptionsBaseUi( const QString &title )
       l->setContentsMargins( 0, 0, 0, 0 );
     }
   }
+
+  mRestored = true;
 }
 
 void QgsOptionsDialogBase::restoreLastPage()

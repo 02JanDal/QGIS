@@ -523,6 +523,8 @@ set(QGIS_GUI_SRCS
   stac/qgsstacsourceselect.cpp
   stac/qgsstacsourceselectprovider.cpp
 
+  survey/qgssurveyrendererpropertieswidget.cpp
+
   tableeditor/qgstableeditordialog.cpp
   tableeditor/qgstableeditorformattingwidget.cpp
   tableeditor/qgstableeditorwidget.cpp
@@ -1608,6 +1610,8 @@ set(QGIS_GUI_HDRS
   stac/qgsstacsourceselect.h
   stac/qgsstacsourceselectprovider.h
 
+  survey/qgssurveyrendererpropertieswidget.h
+
   tableeditor/qgstableeditordialog.h
   tableeditor/qgstableeditorformattingwidget.h
   tableeditor/qgstableeditorwidget.h
@@ -1902,6 +1906,7 @@ target_include_directories(qgis_gui PUBLIC
   ${CMAKE_SOURCE_DIR}/src/gui/sensor
   ${CMAKE_SOURCE_DIR}/src/gui/settings
   ${CMAKE_SOURCE_DIR}/src/gui/stac
+  ${CMAKE_SOURCE_DIR}/src/gui/survey
   ${CMAKE_SOURCE_DIR}/src/gui/tableeditor
   ${CMAKE_SOURCE_DIR}/src/gui/tiledscene
   ${CMAKE_SOURCE_DIR}/src/gui/vector
@@ -2000,6 +2005,11 @@ if (FORCE_STATIC_LIBS)
   if (HAVE_POSTGRESQL)
     target_link_libraries(qgis_gui
       provider_postgres_gui_a
+    )
+  endif()
+  if (HAVE_SURVEY)
+    target_link_libraries(qgis_gui
+      provider_sdal_gui_a
     )
   endif()
 endif()

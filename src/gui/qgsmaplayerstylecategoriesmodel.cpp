@@ -51,6 +51,7 @@ QgsMapLayerStyleCategoriesModel::QgsMapLayerStyleCategoriesModel( Qgis::LayerTyp
     case Qgis::LayerType::PointCloud:
     case Qgis::LayerType::Group:
     case Qgis::LayerType::TiledScene:
+    case Qgis::LayerType::Survey:
       // not yet handled by the model
       break;
   }

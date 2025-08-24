@@ -44,6 +44,7 @@ QgsMimeDataUtils::Uri QgsProviderSublayerDetails::toMimeUri() const
     case Qgis::LayerType::Group:
     case Qgis::LayerType::Annotation:
     case Qgis::LayerType::TiledScene:
+    case Qgis::LayerType::Survey:
       break;
   }
 

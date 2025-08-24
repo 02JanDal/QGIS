@@ -44,6 +44,7 @@
 #include "qgsrenderer.h"
 #include "qgssinglesymbolrenderer.h"
 #include "qgsstyle.h"
+#include "qgssurveylayer.h"
 #include "qgssymbol.h"
 #include "qgssymbollayerutils.h"
 #include "qgssymbolselectordialog.h"
@@ -166,6 +167,7 @@ QMenu *QgsAppLayerTreeViewMenuProvider::createContextMenu()
       QgsPointCloudLayer *pcLayer = qobject_cast<QgsPointCloudLayer *>( layer );
       QgsMeshLayer *meshLayer = qobject_cast<QgsMeshLayer *>( layer );
       QgsVectorTileLayer *vectorTileLayer = qobject_cast<QgsVectorTileLayer *>( layer );
+      QgsSurveyLayer *surveyLayer = qobject_cast<QgsSurveyLayer *>( layer );
 
       if ( layer && layer->isSpatial() )
       {
@@ -433,7 +435,7 @@ QMenu *QgsAppLayerTreeViewMenuProvider::createContextMenu()
 
       menu->addSeparator()->setObjectName( QLatin1String( "ActionPositionSeparator" ) );
 
-      if ( vlayer || meshLayer || pcLayer )
+      if ( vlayer || meshLayer || pcLayer || surveyLayer )
       {
         QAction *toggleEditingAction = QgisApp::instance()->actionToggleEditing();
         QAction *saveLayerEditsAction = QgisApp::instance()->actionSaveActiveLayerEdits();
@@ -447,6 +449,11 @@ QMenu *QgsAppLayerTreeViewMenuProvider::createContextMenu()
           const auto lambdaOpenAttributeTable = [initialMode] { QgisApp::instance()->attributeTable( initialMode ); };
           QAction *attributeTableAction = menu->addAction( QgsApplication::getThemeIcon( QStringLiteral( "/mActionOpenTable.svg" ) ), tr( "Open &Attribute Table" ), QgisApp::instance(), lambdaOpenAttributeTable );
           attributeTableAction->setEnabled( vlayer->isValid() );
+        }
+        else if ( surveyLayer && mView->selectedLayerNodes().count() == 1 )
+        {
+          QAction *attributeTableAction = menu->addAction( QgsApplication::getThemeIcon( QStringLiteral( "/mActionOpenTable.svg" ) ), tr( "Open Survey &Attributes" ), QgisApp::instance(), []() { QgisApp::instance()->attributeTable(); } );
+          attributeTableAction->setEnabled( surveyLayer->isValid() );
         }
 
         // allow editing
@@ -667,6 +674,7 @@ QMenu *QgsAppLayerTreeViewMenuProvider::createContextMenu()
           case Qgis::LayerType::VectorTile:
           case Qgis::LayerType::PointCloud:
           case Qgis::LayerType::TiledScene:
+          case Qgis::LayerType::Survey:
           {
             QMenu *menuExportRaster = new QMenu( tr( "E&xport" ), menu );
             menuExportRaster->setObjectName( QStringLiteral( "exportMenu" ) );

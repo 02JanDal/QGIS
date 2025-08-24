@@ -40,6 +40,7 @@ class QgsPointCloudLayer;
 class QgsAnnotationLayer;
 class QgsVectorTileLayer;
 class QgsTiledSceneLayer;
+class QgsSurveyLayer;
 
 #include <QString>
 #include <QVariant>
@@ -255,13 +256,14 @@ class CORE_EXPORT QgsProcessingUtils
     enum class LayerHint SIP_MONKEYPATCH_SCOPEENUM : int
     {
       UnknownType, //!< Unknown layer type
-      Vector, //!< Vector layer type
-      Raster, //!< Raster layer type
-      Mesh, //!< Mesh layer type, since QGIS 3.6
-      PointCloud, //!< Point cloud layer type, since QGIS 3.22
-      Annotation, //!< Annotation layer type, since QGIS 3.22
-      VectorTile, //!< Vector tile layer type, since QGIS 3.32
-      TiledScene, //!< Tiled scene layer type, since QGIS 3.34
+      Vector,      //!< Vector layer type
+      Raster,      //!< Raster layer type
+      Mesh,        //!< Mesh layer type, since QGIS 3.6
+      PointCloud,  //!< Point cloud layer type, since QGIS 3.22
+      Annotation,  //!< Annotation layer type, since QGIS 3.22
+      VectorTile,  //!< Vector tile layer type, since QGIS 3.32
+      TiledScene,  //!< Tiled scene layer type, since QGIS 3.34
+      Survey,      //!< Survey data layer type, since QGIS 3.xx
     };
     Q_ENUM( LayerHint )
 
@@ -625,6 +627,7 @@ class CORE_EXPORT QgsProcessingUtils
     static bool canUseLayer( const QgsPointCloudLayer *layer );
     static bool canUseLayer( const QgsAnnotationLayer *layer );
     static bool canUseLayer( const QgsTiledSceneLayer *layer );
+    static bool canUseLayer( const QgsSurveyLayer *layer );
     static bool canUseLayer( const QgsVectorLayer *layer,
                              const QList< int > &sourceTypes = QList< int >() );
 

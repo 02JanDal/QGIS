@@ -166,6 +166,9 @@ Qgis::BrowserLayerType QgsProviderSublayerItem::layerTypeFromSublayer( const Qgs
     case Qgis::LayerType::TiledScene:
       return Qgis::BrowserLayerType::TiledScene;
 
+    case Qgis::LayerType::Survey:
+      return Qgis::BrowserLayerType::Survey;
+
     case Qgis::LayerType::Annotation:
     case Qgis::LayerType::Group:
       break;

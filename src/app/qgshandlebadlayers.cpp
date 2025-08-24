@@ -290,6 +290,7 @@ void QgsHandleBadLayers::browseClicked()
       case Qgis::LayerType::Plugin:
       case Qgis::LayerType::Group:
       case Qgis::LayerType::TiledScene:
+      case Qgis::LayerType::Survey:
         break;
     }
 

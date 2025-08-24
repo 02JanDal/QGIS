@@ -4203,7 +4203,8 @@ bool QgsPalLabeling::staticWillUseLayer( const QgsMapLayer *layer )
     case Qgis::LayerType::PointCloud:
     case Qgis::LayerType::Annotation:
     case Qgis::LayerType::Group:
-    case Qgis::LayerType::TiledScene:
+  case Qgis::LayerType::TiledScene:
+  case Qgis::LayerType::Survey:
       return false;
   }
   return false;

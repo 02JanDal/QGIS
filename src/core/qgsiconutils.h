@@ -105,6 +105,13 @@ class CORE_EXPORT QgsIconUtils
     static QIcon iconTiledScene();
 
     /**
+     * Returns an icon representing survey layers.
+     *
+     * \since QGIS 3.xx
+     */
+    static QIcon iconSurvey();
+
+    /**
      * Returns the icon corresponding to a specified map \a layer.
      */
     static QIcon iconForLayer( const QgsMapLayer *layer );

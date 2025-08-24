@@ -305,6 +305,7 @@ void QgsGeoreferencerMainWindow::openLayer( Qgis::LayerType layerType, const QSt
       case Qgis::LayerType::PointCloud:
       case Qgis::LayerType::Group:
       case Qgis::LayerType::TiledScene:
+      case Qgis::LayerType::Survey:
         break;
     }
   }
@@ -327,6 +328,7 @@ void QgsGeoreferencerMainWindow::openLayer( Qgis::LayerType layerType, const QSt
       case Qgis::LayerType::PointCloud:
       case Qgis::LayerType::Group:
       case Qgis::LayerType::TiledScene:
+      case Qgis::LayerType::Survey:
         break;
     }
   }
@@ -352,6 +354,7 @@ void QgsGeoreferencerMainWindow::openLayer( Qgis::LayerType layerType, const QSt
     case Qgis::LayerType::PointCloud:
     case Qgis::LayerType::Group:
     case Qgis::LayerType::TiledScene:
+    case Qgis::LayerType::Survey:
       break;
   }
 
@@ -374,6 +377,7 @@ void QgsGeoreferencerMainWindow::openLayer( Qgis::LayerType layerType, const QSt
     case Qgis::LayerType::PointCloud:
     case Qgis::LayerType::Group:
     case Qgis::LayerType::TiledScene:
+    case Qgis::LayerType::Survey:
       break;
   }
 
@@ -571,6 +575,7 @@ void QgsGeoreferencerMainWindow::generateGDALScript()
         case Qgis::LayerType::PointCloud:
         case Qgis::LayerType::Group:
         case Qgis::LayerType::TiledScene:
+        case Qgis::LayerType::Survey:
           break;
       }
       break;
@@ -1504,6 +1509,7 @@ void QgsGeoreferencerMainWindow::loadSource( Qgis::LayerType layerType, const QS
     case Qgis::LayerType::PointCloud:
     case Qgis::LayerType::Group:
     case Qgis::LayerType::TiledScene:
+    case Qgis::LayerType::Survey:
       Q_ASSERT_X( false, "QgsGeoreferencerMainWindow::loadSource", "unsupported layer type" );
       return;
   }
@@ -1553,6 +1559,7 @@ void QgsGeoreferencerMainWindow::loadSource( Qgis::LayerType layerType, const QS
       case Qgis::LayerType::PointCloud:
       case Qgis::LayerType::Group:
       case Qgis::LayerType::TiledScene:
+      case Qgis::LayerType::Survey:
         break;
     }
   }
@@ -1708,6 +1715,7 @@ bool QgsGeoreferencerMainWindow::georeference()
       case Qgis::LayerType::PointCloud:
       case Qgis::LayerType::Group:
       case Qgis::LayerType::TiledScene:
+      case Qgis::LayerType::Survey:
         break;
     }
     return false;
@@ -1857,8 +1865,8 @@ void QgsGeoreferencerMainWindow::postProcessGeoreferencedLayer( const QString &l
       case Qgis::LayerType::Annotation:
       case Qgis::LayerType::PointCloud:
       case Qgis::LayerType::Group:
-
       case Qgis::LayerType::TiledScene:
+      case Qgis::LayerType::Survey:
         break;
     }
   }

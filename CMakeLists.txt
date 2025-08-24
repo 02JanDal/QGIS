@@ -359,6 +359,8 @@ if(WITH_CORE)
 
   set (WITH_DRACO TRUE CACHE BOOL "Determines whether Draco support should be built")
 
+  set (WITH_SURVEY TRUE CACHE BOOL "Determines whether survey support should be built")
+
   set (WITH_THREAD_LOCAL TRUE CACHE BOOL "Determines whether std::thread_local should be used")
   mark_as_advanced(WITH_THREAD_LOCAL)
 
@@ -894,6 +896,11 @@ if (WITH_ANALYSIS AND WITH_GSL)
   find_package(GSL REQUIRED)
   set(HAVE_GSL TRUE)
   set(HAVE_GEOREFERENCER TRUE)
+endif()
+
+if (WITH_SURVEY)
+  # while sdal is only needed by src/providers/sdal, we also need gama in src/core
+  add_subdirectory(${CMAKE_SOURCE_DIR}/../sdal external/sdal)
 endif()
 
 if(ENABLE_COVERAGE)

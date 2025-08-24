@@ -270,6 +270,7 @@ bool QgsMapToolIdentify::identifyLayer( QList<IdentifyResult> *results, QgsMapLa
     case Qgis::LayerType::Annotation:
     case Qgis::LayerType::Group:
     case Qgis::LayerType::TiledScene:
+    case Qgis::LayerType::Survey:
       break;
   }
   return false;
@@ -1648,6 +1649,7 @@ void QgsMapToolIdentify::fromElevationProfileLayerIdentificationToIdentifyResult
     case Qgis::LayerType::Plugin:
     case Qgis::LayerType::VectorTile:
     case Qgis::LayerType::TiledScene:
+    case Qgis::LayerType::Survey:
     case Qgis::LayerType::Annotation:
     case Qgis::LayerType::Group:
       break;

@@ -629,6 +629,7 @@ class CORE_EXPORT QgsProviderRegistry
      * \see filePointCloudFilters()
      * \see fileVectorTileFilters()
      * \see fileTiledSceneFilters()
+     * \see fileSurveyFilters()
      */
     QString fileVectorFilters() const;
 
@@ -645,6 +646,7 @@ class CORE_EXPORT QgsProviderRegistry
      * \see filePointCloudFilters()
      * \see fileVectorTileFilters()
      * \see fileTiledSceneFilters()
+     * \see fileSurveyFilters()
      */
     QString fileRasterFilters() const;
 
@@ -660,6 +662,7 @@ class CORE_EXPORT QgsProviderRegistry
      * \see filePointCloudFilters()
      * \see fileVectorTileFilters()
      * \see fileTiledSceneFilters()
+     * \see fileSurveyFilters()
      *
      * \since QGIS 3.6
      */
@@ -688,6 +691,7 @@ class CORE_EXPORT QgsProviderRegistry
      * \see fileVectorFilters()
      * \see fileVectorTileFilters()
      * \see fileTiledSceneFilters()
+     * \see fileSurveyFilters()
      *
      * \since QGIS 3.18
      */
@@ -704,6 +708,7 @@ class CORE_EXPORT QgsProviderRegistry
      * \see fileVectorFilters()
      * \see filePointCloudFilters()
      * \see fileTiledSceneFilters()
+     * \see fileSurveyFilters()
      *
      * \since QGIS 3.32
      */
@@ -720,10 +725,28 @@ class CORE_EXPORT QgsProviderRegistry
      * \see fileVectorFilters()
      * \see filePointCloudFilters()
      * \see fileVectorTileFilters()
+     * \see fileSurveyFilters()
      *
      * \since QGIS 3.34
      */
     QString fileTiledSceneFilters() const;
+
+    /**
+     * Returns a file filter string for supported survey files.
+     *
+     * Returns a string suitable for a QFileDialog of survey file formats
+     * supported by all data providers.
+     *
+     * \see fileMeshFilters()
+     * \see fileRasterFilters()
+     * \see fileVectorFilters()
+     * \see filePointCloudFilters()
+     * \see fileVectorTileFilters()
+     * \see fileTiledSceneFilters()
+     *
+     * \since QGIS 3.xx
+     */
+    QString fileSurveyFilters() const;
 
     //! Returns a string containing the available database drivers
     QString databaseDrivers() const;
@@ -807,6 +830,11 @@ class CORE_EXPORT QgsProviderRegistry
      * File filter string for tiled scene files
      */
     QString mTiledSceneFileFilters;
+
+    /**
+     * File filter string for survey files
+     */
+    QString mSurveyFileFilters;
 
     /**
      * Available database drivers string for vector databases

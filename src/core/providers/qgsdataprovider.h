@@ -59,6 +59,10 @@ class CORE_EXPORT QgsDataProvider : public QObject
     {
       sipType = sipType_QgsPointCloudDataProvider;
     }
+    else if ( qobject_cast<QgsSurveyDataProvider *>( sipCpp ) )
+    {
+      sipType = sipType_QgsSurveyDataProvider;
+    }
     else
     {
       sipType = 0;

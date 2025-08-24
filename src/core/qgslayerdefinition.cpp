@@ -16,6 +16,7 @@
 #include <QFile>
 #include <QDir>
 #include <QTextStream>
+#include <qgssurveylayer.h>
 
 #include "qgslayerdefinition.h"
 #include "qgslogger.h"
@@ -355,6 +356,10 @@ QList<QgsMapLayer *> QgsLayerDefinition::loadLayerDefinitionLayersInternal( QDom
 
         case Qgis::LayerType::TiledScene:
           layer = new QgsTiledSceneLayer;
+          break;
+
+        case Qgis::LayerType::Survey:
+          layer = new QgsSurveyLayer;
           break;
 
         case Qgis::LayerType::Group:

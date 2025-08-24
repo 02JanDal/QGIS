@@ -17,6 +17,9 @@
  *                                                                         *
  ***************************************************************************/
 
+#include "qgssurveylayer.h"
+#include "survey/qgssurveyattributesdialog.h"
+#include "survey/qgssurveylayerproperties.h"
 #include <QObject>
 #include <QAction>
 #include <QApplication>
@@ -468,6 +471,7 @@
 #include "tiledscene/qgstiledsceneelevationpropertieswidget.h"
 
 #include "project/qgsprojectelevationsettingswidget.h"
+#include "project/qgsprojectsurveysettingswidget.h"
 #include "sensor/qgsprojectsensorsettingswidget.h"
 
 #include "qgsmaptoolsdigitizingtechniquemanager.h"
@@ -1566,6 +1570,7 @@ QgisApp::QgisApp( QSplashScreen *splash, AppOptions options, const QString &root
 
   registerMapLayerPropertiesFactory( new QgsElevationShadingRendererSettingsWidgetFactory( this ) );
   registerProjectPropertiesWidgetFactory( new QgsProjectElevationSettingsWidgetFactory( this ) );
+  registerProjectPropertiesWidgetFactory( new QgsProjectSurveySettingsWidgetFactory( this ) );
   registerProjectPropertiesWidgetFactory( new QgsProjectSensorSettingsWidgetFactory( this ) );
 
   activateDeactivateLayerRelatedActions( nullptr ); // after members were created
@@ -2490,6 +2495,11 @@ QList<QgsMapLayer *> QgisApp::handleDropUriList( const QgsMimeDataUtils::UriList
       if ( QgsMapLayer *layer = QgsAppLayerHandling::addLayer<QgsTiledSceneLayer>( uri, u.name, u.providerKey, addToLegend ) )
         addedLayers << layer;
     }
+    else if ( ok && layerType == Qgis::LayerType::Survey )
+    {
+      if ( QgsMapLayer *layer = QgsAppLayerHandling::addLayer<QgsSurveyLayer>( uri, u.name, u.providerKey, addToLegend ) )
+        addedLayers << layer;
+    }
     else if ( ok && layerType == Qgis::LayerType::VectorTile )
     {
       QgsTemporaryCursorOverride busyCursor( Qt::WaitCursor );
@@ -2698,9 +2708,13 @@ void QgisApp::dataSourceManager( const QString &pageName, const QString &layerUr
           QgsAppLayerHandling::addLayer<QgsPointCloudLayer>( uri, baseName, providerKey );
           break;
 
-        case Qgis::LayerType::TiledScene:
-          QgsAppLayerHandling::addLayer<QgsTiledSceneLayer>( uri, baseName, providerKey );
-          break;
+          case Qgis::LayerType::TiledScene:
+            QgsAppLayerHandling::addLayer<QgsTiledSceneLayer>( uri, baseName, providerKey );
+            break;
+
+          case Qgis::LayerType::Survey:
+            QgsAppLayerHandling::addLayer<QgsSurveyLayer>( uri, baseName, providerKey );
+            break;
 
         case Qgis::LayerType::Plugin:
         case Qgis::LayerType::Annotation:
@@ -7959,15 +7973,21 @@ void QgisApp::fieldCalculator()
 
 void QgisApp::attributeTable( QgsAttributeTableFilterModel::FilterMode filter, const QString &filterExpression )
 {
-  QgsVectorLayer *myLayer = qobject_cast<QgsVectorLayer *>( activeLayer() );
-  if ( !myLayer || !myLayer->dataProvider() )
+  QgsVectorLayer *vLayer = qobject_cast<QgsVectorLayer *>( activeLayer() );
+  if ( vLayer && vLayer->dataProvider() )
   {
-    return;
+      QgsAttributeTableDialog *dialog = new QgsAttributeTableDialog( vLayer, filter, nullptr, Qt::Window, nullptr, filterExpression );
+      dialog->show();
+      // the dialog will be deleted by itself on close
   }
 
-  QgsAttributeTableDialog *mDialog = new QgsAttributeTableDialog( myLayer, filter, nullptr, Qt::Window, nullptr, filterExpression );
-  mDialog->show();
-  // the dialog will be deleted by itself on close
+  QgsSurveyLayer *sLayer = qobject_cast<QgsSurveyLayer *>( activeLayer() );
+  if ( sLayer && sLayer->dataProvider() )
+  {
+      QgsSurveyAttributesDialog *dialog = new QgsSurveyAttributesDialog( sLayer, nullptr, Qt::Window, nullptr );
+      dialog->show();
+      // the dialog will be deleted by itself on close
+  }
 }
 
 QString QgisApp::saveAsRasterFile( QgsRasterLayer *rasterLayer, const bool defaultAddToCanvas )
@@ -8151,7 +8171,8 @@ QString QgisApp::saveAsFile( QgsMapLayer *layer, const bool onlySelected, const 
     case Qgis::LayerType::Plugin:
     case Qgis::LayerType::Annotation:
     case Qgis::LayerType::Group:
-    case Qgis::LayerType::TiledScene:
+  case Qgis::LayerType::TiledScene:
+  case Qgis::LayerType::Survey:
       return QString();
   }
   return QString();
@@ -8280,7 +8301,8 @@ void QgisApp::saveStyleFile( QgsMapLayer *layer )
     // Not available for these
     case Qgis::LayerType::Annotation:
     case Qgis::LayerType::Plugin:
-    case Qgis::LayerType::Group:
+  case Qgis::LayerType::Group:
+  case Qgis::LayerType::Survey:
       break;
   }
 }
@@ -9889,6 +9911,13 @@ void QgisApp::deselectActiveLayer()
       break;
     }
 
+  case Qgis::LayerType::Survey:
+  {
+    QgsSurveyLayer *slayer = qobject_cast<QgsSurveyLayer *>( layer );
+    slayer->removeSelection();
+    break;
+  }
+
     case Qgis::LayerType::Raster:
     case Qgis::LayerType::Plugin:
     case Qgis::LayerType::Mesh:
@@ -10060,7 +10089,8 @@ void QgisApp::copySelectionToClipboard( QgsMapLayer *layerContainingSelection )
     case Qgis::LayerType::Annotation:
     case Qgis::LayerType::PointCloud:
     case Qgis::LayerType::Group:
-    case Qgis::LayerType::TiledScene:
+  case Qgis::LayerType::TiledScene:
+  case Qgis::LayerType::Survey:
       return; // not supported
   }
 }
@@ -10584,7 +10614,8 @@ bool QgisApp::toggleEditing( QgsMapLayer *layer, bool allowCancel )
     case Qgis::LayerType::VectorTile:
     case Qgis::LayerType::Annotation:
     case Qgis::LayerType::Group:
-    case Qgis::LayerType::TiledScene:
+  case Qgis::LayerType::TiledScene:
+  case Qgis::LayerType::Survey:
       break;
   }
   return false;
@@ -10987,7 +11018,8 @@ void QgisApp::saveEdits( QgsMapLayer *layer, bool leaveEditable, bool triggerRep
     case Qgis::LayerType::VectorTile:
     case Qgis::LayerType::Annotation:
     case Qgis::LayerType::Group:
-    case Qgis::LayerType::TiledScene:
+  case Qgis::LayerType::TiledScene:
+  case Qgis::LayerType::Survey:
       break;
   }
 }
@@ -11080,7 +11112,8 @@ void QgisApp::cancelEdits( QgsMapLayer *layer, bool leaveEditable, bool triggerR
     case Qgis::LayerType::VectorTile:
     case Qgis::LayerType::Annotation:
     case Qgis::LayerType::Group:
-    case Qgis::LayerType::TiledScene:
+  case Qgis::LayerType::TiledScene:
+  case Qgis::LayerType::Survey:
       break;
   }
 }
@@ -11310,6 +11343,7 @@ void QgisApp::updateLayerModifiedActions()
       case Qgis::LayerType::Annotation:
       case Qgis::LayerType::Group:
       case Qgis::LayerType::TiledScene:
+    case Qgis::LayerType::Survey:
         break;
     }
   }
@@ -11778,7 +11812,8 @@ void QgisApp::duplicateLayers( const QList<QgsMapLayer *> &lyrList )
       case Qgis::LayerType::VectorTile:
       case Qgis::LayerType::Mesh:
       case Qgis::LayerType::Annotation:
-      case Qgis::LayerType::TiledScene:
+    case Qgis::LayerType::TiledScene:
+    case Qgis::LayerType::Survey:
       {
         dupLayer = selectedLyr->clone();
         break;
@@ -14772,6 +14807,14 @@ void QgisApp::selectionChanged( const QgsFeatureIds &, const QgsFeatureIds &, bo
         break;
       }
 
+    case Qgis::LayerType::Survey:
+    {
+      QgsSurveyLayer *sLayer = qobject_cast<QgsSurveyLayer *>( layer );
+      const int selectedCount = sLayer->selectedFeatureCount();
+      showStatusMessage( tr( "%n feature(s) selected on layer %1.", "number of selected features", selectedCount ).arg( layer->name() ) );
+      break;
+    }
+
       case Qgis::LayerType::Raster:
       case Qgis::LayerType::Plugin:
       case Qgis::LayerType::Mesh:
@@ -14900,11 +14943,17 @@ bool QgisApp::selectedLayersHaveSelection()
         return layer->selectedFeatureCount() > 0;
       }
 
-      case Qgis::LayerType::VectorTile:
-      {
-        QgsVectorTileLayer *layer = qobject_cast<QgsVectorTileLayer *>( activeLayer() );
-        return layer->selectedFeatureCount() > 0;
-      }
+    case Qgis::LayerType::VectorTile:
+    {
+      QgsVectorTileLayer *layer = qobject_cast<QgsVectorTileLayer *>( activeLayer() );
+      return layer->selectedFeatureCount() > 0;
+    }
+
+    case Qgis::LayerType::Survey:
+    {
+      QgsSurveyLayer *layer = qobject_cast<QgsSurveyLayer *>( activeLayer() );
+      return layer->selectedFeatureCount() > 0;
+    }
 
       case Qgis::LayerType::Raster:
       case Qgis::LayerType::Plugin:
@@ -14938,6 +14987,13 @@ bool QgisApp::selectedLayersHaveSelection()
           return true;
         break;
       }
+    case Qgis::LayerType::Survey:
+    {
+      QgsSurveyLayer *layer = qobject_cast<QgsSurveyLayer *>( mapLayer );
+      if ( layer->selectedFeatureCount() > 0 )
+        return true;
+      break;
+    }
 
       case Qgis::LayerType::Raster:
       case Qgis::LayerType::Plugin:
@@ -15700,6 +15756,10 @@ void QgisApp::activateDeactivateLayerRelatedActions( QgsMapLayer *layer )
       updateUndoActions();
       break;
     }
+
+  case Qgis::LayerType::Survey:
+      break; // TODO SURVEY
+
     case Qgis::LayerType::Plugin:
     case Qgis::LayerType::Group:
       break;
@@ -16313,6 +16373,34 @@ void QgisApp::writeProject( QDomDocument &doc )
 
     qgisNode.appendChild( attributeTablesElement );
   }
+  if ( QgsProject::instance()->flags() & Qgis::ProjectFlag::RememberAttributeTableWindowsBetweenSessions )
+  {
+    // save attribute tables
+    QDomElement surveyAttributesWindowsElement = doc.createElement( QStringLiteral( "surveyAttributesDialogs" ) );
+
+    QSet<QgsSurveyAttributesDialog *> storedDialogs;
+    auto saveDialog = [&storedDialogs, &surveyAttributesWindowsElement, &doc]( QgsSurveyAttributesDialog *surveyAttributesDialog ) {
+      if ( storedDialogs.contains( surveyAttributesDialog ) )
+        return;
+
+      QgsDebugMsgLevel( surveyAttributesDialog->windowTitle(), 2 );
+      const QDomElement tableElement = surveyAttributesDialog->writeXml( doc );
+      surveyAttributesWindowsElement.appendChild( tableElement );
+      storedDialogs.insert( surveyAttributesDialog );
+    };
+
+    const QList<QWidget *> topLevelWidgets = QgsApplication::topLevelWidgets();
+    for ( QWidget *widget : topLevelWidgets )
+    {
+      QList<QgsSurveyAttributesDialog *> dialogChildren = widget->findChildren<QgsSurveyAttributesDialog *>();
+      for ( QgsSurveyAttributesDialog *attributeTableDialog : dialogChildren )
+      {
+        saveDialog( attributeTableDialog );
+      }
+    }
+
+    qgisNode.appendChild( surveyAttributesWindowsElement );
+  }
 
   // Save the position of the map view docks
   QDomElement mapViewNode = doc.createElement( QStringLiteral( "mapViewDocks" ) );
@@ -16460,6 +16548,27 @@ void QgisApp::readProject( const QDomDocument &doc )
 
           QgsAttributeTableDialog *dialog = new QgsAttributeTableDialog( layer, filterMode, nullptr, Qt::Window, &initiallyDocked );
           dialog->readXml( attributeTableElement );
+        }
+      }
+    }
+  }
+  if ( QgsProject::instance()->flags() & Qgis::ProjectFlag::RememberAttributeTableWindowsBetweenSessions )
+  {
+    // restore survey attribute windows
+    const QDomElement surveyAttributesDialogsElement = doc.documentElement().firstChildElement( QStringLiteral( "surveyAttributesDialogs" ) );
+    const QDomNodeList surveyAttributesDialogNodes = surveyAttributesDialogsElement.elementsByTagName( QStringLiteral( "surveyAttributesDialog" ) );
+    for ( int i = 0; i < surveyAttributesDialogNodes.size(); ++i )
+    {
+      const QDomElement surveyAttributesDialogElement = surveyAttributesDialogNodes.at( i ).toElement();
+      const QString layerId = surveyAttributesDialogElement.attribute( QStringLiteral( "layer" ) );
+      if ( QgsSurveyLayer *layer = qobject_cast<QgsSurveyLayer *>( QgsProject::instance()->mapLayer( layerId ) ) )
+      {
+        if ( layer->isValid() )
+        {
+          bool initiallyDocked = surveyAttributesDialogElement.attribute( QStringLiteral( "isDocked" ), QStringLiteral( "0" ) ).toInt() == 1;
+
+          QgsSurveyAttributesDialog *dialog = new QgsSurveyAttributesDialog( layer, nullptr, Qt::Window, &initiallyDocked );
+          dialog->readXml( surveyAttributesDialogElement );
         }
       }
     }
@@ -16661,6 +16770,30 @@ void QgisApp::showLayerProperties( QgsMapLayer *mapLayer, const QString &page )
       mMapStyleWidget->blockUpdates( false ); // delete since dialog cannot be reused without updating code
       break;
     }
+
+  case Qgis::LayerType::Survey:
+  {
+    QgsSurveyLayerProperties surveyLayerPropertiesDialog( qobject_cast<QgsSurveyLayer *>( mapLayer ), mMapCanvas, visibleMessageBar(), this );
+
+    for ( const QgsMapLayerConfigWidgetFactory *factory : std::as_const( providerFactories ) )
+    {
+      surveyLayerPropertiesDialog.addPropertiesPageFactory( factory );
+    }
+
+    if ( !page.isEmpty() )
+      surveyLayerPropertiesDialog.setCurrentPage( page );
+    else
+      surveyLayerPropertiesDialog.restoreLastPage();
+
+    mMapStyleWidget->blockUpdates( true );
+    if ( surveyLayerPropertiesDialog.exec() )
+    {
+      activateDeactivateLayerRelatedActions( mapLayer );
+      mMapStyleWidget->updateCurrentWidgetLayer();
+    }
+    mMapStyleWidget->blockUpdates( false ); // delete since dialog cannot be reused without updating code
+    break;
+  }
 
     case Qgis::LayerType::Plugin:
     {

@@ -433,6 +433,7 @@ QString QgsPdalProviderMetadata::filters( Qgis::FileFilterType type )
     case Qgis::FileFilterType::MeshDataset:
     case Qgis::FileFilterType::VectorTile:
     case Qgis::FileFilterType::TiledScene:
+    case Qgis::FileFilterType::Survey:
       return QString();
 
     case Qgis::FileFilterType::PointCloud:

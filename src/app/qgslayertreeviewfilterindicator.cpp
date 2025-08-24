@@ -109,6 +109,7 @@ void QgsLayerTreeViewFilterIndicatorProvider::connectSignals( QgsMapLayer *layer
     case Qgis::LayerType::Plugin:
     case Qgis::LayerType::VectorTile:
     case Qgis::LayerType::TiledScene:
+    case Qgis::LayerType::Survey:
       break;
   }
 }
@@ -146,6 +147,7 @@ void QgsLayerTreeViewFilterIndicatorProvider::disconnectSignals( QgsMapLayer *la
     case Qgis::LayerType::Plugin:
     case Qgis::LayerType::VectorTile:
     case Qgis::LayerType::TiledScene:
+    case Qgis::LayerType::Survey:
       break;
   }
 }
@@ -175,6 +177,7 @@ bool QgsLayerTreeViewFilterIndicatorProvider::acceptLayer( QgsMapLayer *layer )
     case Qgis::LayerType::Plugin:
     case Qgis::LayerType::VectorTile:
     case Qgis::LayerType::TiledScene:
+    case Qgis::LayerType::Survey:
       break;
   }
   return false;

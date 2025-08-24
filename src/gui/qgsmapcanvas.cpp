@@ -67,6 +67,7 @@ email                : sherman at mrcc.com
 #include "qgsmessagelog.h"
 #include "qgsproject.h"
 #include "qgsrubberband.h"
+#include "qgssurveylayer.h"
 #include "qgsvectorlayer.h"
 #include "qgsmapthemecollection.h"
 #include "qgscoordinatetransformcontext.h"
@@ -446,6 +447,13 @@ void QgsMapCanvas::setLayersPrivate( const QList<QgsMapLayer *> &layers )
         break;
       }
 
+      case Qgis::LayerType::Survey:
+      {
+        QgsSurveyLayer *slayer = qobject_cast<QgsSurveyLayer *>( layer );
+        disconnect( slayer, &QgsSurveyLayer::selectionChanged, this, &QgsMapCanvas::selectionChangedSlot );
+        break;
+      }
+
       case Qgis::LayerType::Raster:
       case Qgis::LayerType::Plugin:
       case Qgis::LayerType::Mesh:
@@ -480,6 +488,13 @@ void QgsMapCanvas::setLayersPrivate( const QList<QgsMapLayer *> &layers )
       {
         QgsVectorTileLayer *vtlayer = qobject_cast<QgsVectorTileLayer *>( layer );
         connect( vtlayer, &QgsVectorTileLayer::selectionChanged, this, &QgsMapCanvas::selectionChangedSlot );
+        break;
+      }
+
+      case Qgis::LayerType::Survey:
+      {
+        QgsSurveyLayer *slayer = qobject_cast<QgsSurveyLayer *>( layer );
+        connect( slayer, &QgsSurveyLayer::selectionChanged, this, &QgsMapCanvas::selectionChangedSlot );
         break;
       }
 
@@ -1849,6 +1864,7 @@ void QgsMapCanvas::zoomToSelected( QgsMapLayer *layer )
     case Qgis::LayerType::PointCloud:
     case Qgis::LayerType::Group:
     case Qgis::LayerType::TiledScene:
+    case Qgis::LayerType::Survey: // TODO SURVEY
       return; // not supported
   }
 
@@ -1918,6 +1934,7 @@ void QgsMapCanvas::zoomToSelected( const QList<QgsMapLayer *> &layers )
       case Qgis::LayerType::PointCloud:
       case Qgis::LayerType::Group:
       case Qgis::LayerType::TiledScene:
+      case Qgis::LayerType::Survey: // TODO SURVEY
         break;
     }
   }
@@ -2103,6 +2120,7 @@ void QgsMapCanvas::panToSelected( QgsMapLayer *layer )
     case Qgis::LayerType::PointCloud:
     case Qgis::LayerType::Group:
     case Qgis::LayerType::TiledScene:
+    case Qgis::LayerType::Survey: // TODO SURVEY
       return;
   }
 
@@ -2174,6 +2192,7 @@ void QgsMapCanvas::panToSelected( const QList<QgsMapLayer *> &layers )
       case Qgis::LayerType::PointCloud:
       case Qgis::LayerType::Group:
       case Qgis::LayerType::TiledScene:
+      case Qgis::LayerType::Survey: // TODO SURVEY
         continue;
     }
 

@@ -97,6 +97,12 @@ QIcon QgsIconUtils::iconTiledScene()
   return QgsApplication::getThemeIcon( QStringLiteral( "/mIconTiledSceneLayer.svg" ) );
 }
 
+QIcon QgsIconUtils::iconSurvey()
+{
+  // TODO SURVEY
+  return QgsApplication::getThemeIcon( QStringLiteral( "/mIconSurveyLayer.svg" ) );
+}
+
 QIcon QgsIconUtils::iconDefaultLayer()
 {
   return QgsApplication::getThemeIcon( QStringLiteral( "/mIconLayer.png" ) );
@@ -115,6 +121,7 @@ QIcon QgsIconUtils::iconForLayer( const QgsMapLayer *layer )
       case Qgis::LayerType::Annotation:
       case Qgis::LayerType::Group:
       case Qgis::LayerType::TiledScene:
+      case Qgis::LayerType::Survey:
       {
         return QgsIconUtils::iconForLayerType( layer->type() );
       }
@@ -184,6 +191,9 @@ QIcon QgsIconUtils::iconForLayerType( Qgis::LayerType type )
 
     case Qgis::LayerType::TiledScene:
       return QgsIconUtils::iconTiledScene();
+
+    case Qgis::LayerType::Survey:
+      return QgsIconUtils::iconSurvey();
 
     case Qgis::LayerType::Vector:
       return QgsIconUtils::iconGeometryCollection();

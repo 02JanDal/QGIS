@@ -20,6 +20,7 @@
 #include "qgsproject.h"
 #include "qgsexception.h"
 #include "qgsprocessingcontext.h"
+#include "qgssurveylayer.h"
 #include "qgsvectorlayerexporter.h"
 #include "qgsvectorfilewriter.h"
 #include "qgsmemoryproviderutils.h"
@@ -233,6 +234,8 @@ QgsMapLayer *QgsProcessingUtils::mapLayerFromStore( const QString &string, QgsMa
         return !canUseLayer( qobject_cast< QgsPointCloudLayer * >( layer ) );
       case Qgis::LayerType::Annotation:
         return !canUseLayer( qobject_cast< QgsAnnotationLayer * >( layer ) );
+      case Qgis::LayerType::Survey:
+        return !canUseLayer( qobject_cast< QgsSurveyLayer * >( layer ) );
     }
     return true;
   } ), layers.end() );
@@ -264,6 +267,9 @@ QgsMapLayer *QgsProcessingUtils::mapLayerFromStore( const QString &string, QgsMa
 
       case LayerHint::TiledScene:
         return l->type() == Qgis::LayerType::TiledScene;
+
+      case LayerHint::Survey:
+        return l->type() == Qgis::LayerType::Survey;
     }
     return true;
   };
@@ -365,6 +371,9 @@ QgsMapLayer *QgsProcessingUtils::loadMapLayerFromString( const QString &string, 
       break;
     case LayerHint::TiledScene:
       candidateTypes.append( Qgis::LayerType::TiledScene );
+      break;
+    case LayerHint::Survey:
+      candidateTypes.append( Qgis::LayerType::Survey );
       break;
   }
 
@@ -725,6 +734,11 @@ bool QgsProcessingUtils::canUseLayer( const QgsAnnotationLayer *layer )
 }
 
 bool QgsProcessingUtils::canUseLayer( const QgsTiledSceneLayer *layer )
+{
+  return layer && layer->isValid();
+}
+
+bool QgsProcessingUtils::canUseLayer( const QgsSurveyLayer *layer )
 {
   return layer && layer->isValid();
 }

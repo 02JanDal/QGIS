@@ -257,6 +257,7 @@ void QgsDataSourceManagerDialog::makeConnections( QgsAbstractDataSourceWidget *d
         break;
 
       case Qgis::LayerType::TiledScene:
+      case Qgis::LayerType::Survey:
         emit addLayer( type, url, baseName, providerKey );
         break;
     }

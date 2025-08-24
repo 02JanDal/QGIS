@@ -37,6 +37,7 @@
 #include "qgsbrowsertreeview.h"
 #include "qgslogger.h"
 #include "qgsrasterlayer.h"
+#include "qgssurveylayer.h"
 #include "qgsvectorlayer.h"
 #include "qgsproject.h"
 #include "qgsmeshlayer.h"
@@ -237,6 +238,14 @@ void QgsBrowserLayerProperties::setItem( QgsDataItem *item )
       QgsTiledSceneLayer::LayerOptions options { QgsProject::instance()->transformContext() };
       options.skipCrsValidation = true;
       mLayer = std::make_unique<QgsTiledSceneLayer>( layerItem->uri(), layerItem->name(), layerItem->providerKey(), options );
+      break;
+    }
+
+    case Qgis::LayerType::Survey:
+    {
+      QgsDebugMsgLevel( QStringLiteral( "creating survey layer" ), 2 );
+      QgsSurveyLayer::LayerOptions options { QgsProject::instance()->transformContext() };
+      mLayer = std::make_unique<QgsSurveyLayer>( layerItem->uri(), layerItem->name(), layerItem->providerKey(), options );
       break;
     }
 

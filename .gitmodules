@@ -1,0 +1,3 @@
+[submodule "external/gama/upstream"]
+	path = external/gama/upstream
+	url = https://git.savannah.gnu.org/git/gama.git

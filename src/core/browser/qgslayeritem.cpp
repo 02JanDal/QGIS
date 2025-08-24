@@ -122,6 +122,9 @@ Qgis::LayerType QgsLayerItem::mapLayerType() const
     case Qgis::BrowserLayerType::TiledScene:
       return Qgis::LayerType::TiledScene;
 
+    case Qgis::BrowserLayerType::Survey:
+      return Qgis::LayerType::Survey;
+
     case Qgis::BrowserLayerType::NoType:
     case Qgis::BrowserLayerType::Vector:
     case Qgis::BrowserLayerType::Point:

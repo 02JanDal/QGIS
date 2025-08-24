@@ -87,6 +87,7 @@ class QgsAttributeEditorContainer;
 class QgsPropertyCollection;
 class QgsMapViewsManager;
 class QgsProjectElevationProperties;
+class QgsProjectSurveyProperties;
 class QgsProjectGpsSettings;
 class QgsSensorManager;
 
@@ -955,12 +956,16 @@ class CORE_EXPORT QgsProject : public QObject, public QgsExpressionContextGenera
      */
     const QgsProjectElevationProperties *elevationProperties() const SIP_SKIP;
 
+    const QgsProjectSurveyProperties *surveyProperties() const SIP_SKIP;
+
     /**
      * Returns the project's elevation properties, which contains the project's elevation related settings.
      *
      * \since QGIS 3.26
      */
     QgsProjectElevationProperties *elevationProperties();
+
+    QgsProjectSurveyProperties *surveyProperties();
 
     /**
      * Returns the project's display settings, which contains settings and properties relating
@@ -2496,6 +2501,8 @@ class CORE_EXPORT QgsProject : public QObject, public QgsExpressionContextGenera
     QgsProjectTimeSettings *mTimeSettings = nullptr;
 
     QgsProjectElevationProperties *mElevationProperties = nullptr;
+
+    QgsProjectSurveyProperties *mSurveyProperties = nullptr;
 
     QgsProjectDisplaySettings *mDisplaySettings = nullptr;
 

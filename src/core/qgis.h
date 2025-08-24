@@ -176,6 +176,7 @@ class CORE_EXPORT Qgis
       PointCloud SIP_MONKEYPATCH_COMPAT_NAME( PointCloudLayer ), //!< Point cloud layer. Added in QGIS 3.18
       Group SIP_MONKEYPATCH_COMPAT_NAME( GroupLayer ), //!< Composite group layer. Added in QGIS 3.24
       TiledScene, //!< Tiled scene layer. Added in QGIS 3.34
+      Survey, //!< Survey data layer. Added in QGIS 3.xx
     };
     Q_ENUM( LayerType )
 
@@ -200,8 +201,9 @@ class CORE_EXPORT Qgis
       PointCloudLayer = 512, //!< QgsPointCloudLayer \since QGIS 3.18
       AnnotationLayer = 1024, //!< QgsAnnotationLayer \since QGIS 3.22
       TiledSceneLayer = 2048, //!< QgsTiledSceneLayer \since QGIS 3.34
-      All = RasterLayer | VectorLayer | PluginLayer | MeshLayer | VectorTileLayer | PointCloudLayer | AnnotationLayer | TiledSceneLayer, //!< All layers
-      SpatialLayer = RasterLayer | HasGeometry | PluginLayer | MeshLayer | VectorTileLayer | PointCloudLayer | AnnotationLayer | TiledSceneLayer //!< All spatial layers. \since QGIS 3.24
+      SurveyLayer = 4096, //!< QgsSurveyLayer \since QGIS 3.xx
+      All = RasterLayer | VectorLayer | PluginLayer | MeshLayer | VectorTileLayer | PointCloudLayer | AnnotationLayer | TiledSceneLayer | SurveyLayer, //!< All layers
+      SpatialLayer = RasterLayer | HasGeometry | PluginLayer | MeshLayer | VectorTileLayer | PointCloudLayer | AnnotationLayer | TiledSceneLayer | SurveyLayer //!< All spatial layers. \since QGIS 3.24
     };
     Q_DECLARE_FLAGS( LayerFilters, LayerFilter )
     Q_FLAG( LayerFilters )
@@ -977,6 +979,7 @@ class CORE_EXPORT Qgis
       VectorTile, //!< Vector tile layer
       PointCloud, //!< Point cloud layer
       TiledScene, //!< Tiled scene layer \since QGIS 3.34
+      Survey, //!< Survey data layer \since QGIS 3.xx
     };
     Q_ENUM( BrowserLayerType )
 
@@ -1323,6 +1326,7 @@ class CORE_EXPORT Qgis
       PointCloud SIP_MONKEYPATCH_COMPAT_NAME( FilterPointCloud ), //!< Point clouds \since QGIS 3.18
       VectorTile, //!< Vector tile layers \since QGIS 3.32
       TiledScene, //!< Tiled scene layers \since QGIS 3.34
+      Survey, //!< Survey layers \since QGIS 3.xx
     };
     Q_ENUM( FileFilterType )
 
@@ -5579,6 +5583,26 @@ class CORE_EXPORT Qgis
      */
     Q_DECLARE_FLAGS( TiledSceneRendererFlags, TiledSceneRendererFlag )
     Q_FLAG( TiledSceneRendererFlags )
+
+    /**
+     * Survey data provider capabilities.
+     *
+     * \since QGIS 3.xx
+     */
+    enum class SurveyProviderCapability : int SIP_ENUM_BASETYPE( IntFlag )
+    {
+      ReadLayerMetadata = 1 << 1, //!< Provider can read layer metadata from data store. See QgsDataProvider::layerMetadata()
+      ReloadData = 1 << 2,
+    };
+    Q_ENUM( SurveyProviderCapability )
+
+    /**
+     * Survey data provider capabilities.
+     *
+     * \since QGIS 3.xx
+     */
+    Q_DECLARE_FLAGS( SurveyProviderCapabilities, SurveyProviderCapability )
+    Q_FLAG( SurveyProviderCapabilities )
 
     /**
      * Resampling algorithm to be used (equivalent to GDAL's enum GDALResampleAlg)

@@ -644,6 +644,7 @@ void QgsAdvancedDigitizingDockWidget::switchZM()
       case Qgis::LayerType::PointCloud:
       case Qgis::LayerType::Group:
       case Qgis::LayerType::TiledScene:
+      case Qgis::LayerType::Survey:
         break;
     }
   }

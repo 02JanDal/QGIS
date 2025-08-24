@@ -409,6 +409,7 @@ void QgsProviderRegistry::rebuildFilterStrings()
   mPointCloudFileFilters.clear();
   mVectorTileFileFilters.clear();
   mTiledSceneFileFilters.clear();
+  mSurveyFileFilters.clear();
 
   QStringList pointCloudWildcards;
   QStringList pointCloudFilters;
@@ -418,6 +419,9 @@ void QgsProviderRegistry::rebuildFilterStrings()
 
   QStringList tiledSceneWildcards;
   QStringList tiledSceneFilters;
+
+  QStringList surveyWildcards;
+  QStringList surveyFilters;
 
   for ( Providers::const_iterator it = mProviders.begin(); it != mProviders.end(); ++it )
   {
@@ -497,6 +501,20 @@ void QgsProviderRegistry::rebuildFilterStrings()
         tiledSceneWildcards.append( QgsFileUtils::wildcardsFromFilter( filter ).split( ' ' ) );
       }
     }
+
+    // now get survey file filters, if any
+    const QString surveySceneFilters = meta->filters( Qgis::FileFilterType::Survey );
+    if ( !surveySceneFilters.isEmpty() )
+    {
+      QgsDebugMsgLevel( "survey filters: " + surveySceneFilters, 2 );
+
+      const QStringList filters = surveySceneFilters.split( QStringLiteral( ";;" ), Qt::SkipEmptyParts );
+      for ( const QString &filter : filters )
+      {
+        surveyFilters.append( filter );
+        surveyWildcards.append( QgsFileUtils::wildcardsFromFilter( filter ).split( ' ' ) );
+      }
+    }
   }
 
   if ( !pointCloudFilters.empty() )
@@ -518,6 +536,13 @@ void QgsProviderRegistry::rebuildFilterStrings()
     tiledSceneFilters.insert( 0, QObject::tr( "All Supported Files" ) + QStringLiteral( " (%1)" ).arg( tiledSceneWildcards.join( ' ' ) ) );
     tiledSceneFilters.insert( 1, QObject::tr( "All Files" ) + QStringLiteral( " (*.*)" ) );
     mTiledSceneFileFilters = tiledSceneFilters.join( QLatin1String( ";;" ) );
+  }
+
+  if ( !surveyFilters.empty() )
+  {
+    surveyFilters.insert( 0, QObject::tr( "All Supported Files" ) + QStringLiteral( " (%1)" ).arg( surveyWildcards.join( ' ' ) ) );
+    surveyFilters.insert( 1, QObject::tr( "All Files" ) + QStringLiteral( " (*.*)" ) );
+    mSurveyFileFilters = surveyFilters.join( QLatin1String( ";;" ) );
   }
 }
 
@@ -986,6 +1011,11 @@ QString QgsProviderRegistry::fileVectorTileFilters() const
 QString QgsProviderRegistry::fileTiledSceneFilters() const
 {
   return mTiledSceneFileFilters;
+}
+
+QString QgsProviderRegistry::fileSurveyFilters() const
+{
+  return mSurveyFileFilters;
 }
 
 QString QgsProviderRegistry::databaseDrivers() const

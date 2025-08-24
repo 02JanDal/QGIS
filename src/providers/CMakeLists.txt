@@ -8,6 +8,8 @@ add_subdirectory(wcs)
 add_subdirectory(delimitedtext)
 add_subdirectory(arcgisrest)
 
+add_subdirectory(sdal)
+
 if (WITH_SPATIALITE)
   add_subdirectory(spatialite)
   add_subdirectory(wfs)

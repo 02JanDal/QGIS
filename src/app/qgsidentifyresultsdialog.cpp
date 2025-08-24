@@ -561,6 +561,7 @@ void QgsIdentifyResultsDialog::addFeature( const QgsMapToolIdentify::IdentifyRes
     case Qgis::LayerType::Plugin:
     case Qgis::LayerType::Annotation:
     case Qgis::LayerType::Group:
+    case Qgis::LayerType::Survey:
       break;
     case Qgis::LayerType::TiledScene:
       addFeature( qobject_cast<QgsTiledSceneLayer *>( result.mLayer ), result.mLabel, result.mAttributes, result.mDerivedAttributes );
@@ -2343,6 +2344,7 @@ void QgsIdentifyResultsDialog::highlightFeature( QTreeWidgetItem *item )
     case Qgis::LayerType::Mesh:
     case Qgis::LayerType::Annotation:
     case Qgis::LayerType::Group:
+    case Qgis::LayerType::Survey:
       return; // not supported
   }
 
