@@ -52,6 +52,9 @@ QString memoryLayerFieldType( QMetaType::Type type, const QString &typeString )
       return QStringLiteral( "boolean" );
 
     case QMetaType::Type::QVariantMap:
+      if (typeString == QStringLiteral("assets")) {
+        return QStringLiteral("assets");
+      }
       return QStringLiteral( "map" );
 
     case QMetaType::Type::User:

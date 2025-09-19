@@ -13,6 +13,7 @@
  *                                                                         *
  ***************************************************************************/
 
+#include "qgsfeatureasset.h"
 #include "qgsmemoryprovider.h"
 #include "moc_qgsmemoryprovider.cpp"
 #include "qgsmemoryfeatureiterator.h"
@@ -121,6 +122,7 @@ QgsMemoryProvider::QgsMemoryProvider( const QString &uri, const ProviderOptions 
                   // complex types
                   << QgsVectorDataProvider::NativeType( QgsVariantUtils::typeToDisplayString( QMetaType::Type::QVariantMap ), QStringLiteral( "map" ), QMetaType::Type::QVariantMap, -1, -1, -1, -1 )
                   << QgsVectorDataProvider::NativeType( tr( "Geometry" ), QStringLiteral( "geometry" ), QMetaType::Type::User )
+                  << QgsVectorDataProvider::NativeType( tr("Assets"), QStringLiteral("assets"), QMetaType::Type::QVariantMap, -1, -1, -1, -1, (QMetaType::Type)qMetaTypeId<QgsFeatureAsset>())
                 );
 
   if ( query.hasQueryItem( QStringLiteral( "field" ) ) )
